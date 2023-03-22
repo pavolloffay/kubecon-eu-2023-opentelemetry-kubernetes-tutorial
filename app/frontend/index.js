@@ -2,32 +2,36 @@ const express = require('express')
 const app = express()
 const http = require('http');
 const port = process.env.FRONTEND_PORT || 3000
+const backend1url = process.env.BACKEND1_URL || 'http://localhost:5165/rolldice'
+const backend2url = process.env.BACKEND2_URL || 'http://localhost:5000/rolldice'
 
 app.get('/', (req, res) => {
   const p1 = new Promise((resolve, reject) => {
-    http.get('http://localhost:5165/rolldice', response => {
+    http.get(backend1url, response => {
       let data = [];
 
       response.on('data', chunk => {
         data.push(chunk);
       });
       response.on('end', () => {
-        res.write('Player 1 rolls: ' + player1 + '\n')
-        resolve(JSON.parse(Buffer.concat(data).toString()));
+	const result = JSON.parse(Buffer.concat(data).toString())
+        res.write('Player 1 rolls: ' + result + '\n')
+        resolve(result);
       })
     })
   })
 
   const p2 = new Promise((resolve, reject) => {
-    http.get('http://localhost:5000/rolldice', response => {
+    http.get(backend2url, response => {
       let data = [];
 
       response.on('data', chunk => {
         data.push(chunk);
       });
       response.on('end', () => {
-        res.write('Player 2 rolls: ' + player2 + '\n')
-        resolve(JSON.parse(Buffer.concat(data).toString()));
+	const result = JSON.parse(Buffer.concat(data).toString())
+        res.write('Player 2 rolls: ' + result + '\n')
+      	resolve(result)
       })
     })
   })
