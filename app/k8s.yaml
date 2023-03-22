@@ -1,0 +1,110 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend1-deployment
+  labels:
+    app: backend1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend1
+  template:
+    metadata:
+      labels:
+        app: backend1
+      annotations:
+        instrumentation.opentelemetry.io/inject-python: "true"
+    spec:
+      containers:
+      - name: backend1
+        image: ghcr.io/frzifus/kubecon-2023-backend1:latest
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend1-service
+spec:
+  ports:
+  - port: 5000
+    targetPort: 5000
+  selector:
+    app: backend1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend2-deployment
+  labels:
+    app: backend2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend2
+  template:
+    metadata:
+      labels:
+        app: backend2
+      annotations:
+        instrumentation.opentelemetry.io/inject-dotnet: "true"
+    spec:
+      containers:
+      - name: backend2
+        image: ghcr.io/frzifus/kubecon-2023-backend2:latest
+        ports:
+        - containerPort: 5165
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend2-service
+spec:
+  ports:
+  - port: 5165
+    targetPort: 5165
+  selector:
+    app: backend2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  labels:
+    app: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+      annotations:
+        instrumentation.opentelemetry.io/inject-nodejs: "true"
+    spec:
+      containers:
+      - name: frontend
+        image: ghcr.io/frzifus/kubecon-2023-frontend:latest
+        env:
+          - name: BACKEND1_URL
+            value: "http://backend1-service:5000/rolldice"
+          - name: BACKEND2_URL # TODO: point to service 2, once its runnable.
+            value: "http://backend1-service:5000/rolldice"
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  ports:
+  - port: 3000
+    targetPort: 3000
+  selector:
+    app: frontend
