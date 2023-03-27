@@ -15,3 +15,10 @@ services:
     build: ./backend2
     ports:
       - "5165:5165"
+  loadgen:
+    build: ./loadgen
+    scale: 2
+    depends_on:
+      - frontend
+      - backend1
+      - backend2
