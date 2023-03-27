@@ -15,6 +15,6 @@ COPY --from=build-env /App/out .
 
 # https://stackoverflow.com/a/67111195
 ENV DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE=false
-
+ENV ASPNETCORE_URLS="http://*:5165"
 
 ENTRYPOINT ["dotnet", "backend2.dll"]

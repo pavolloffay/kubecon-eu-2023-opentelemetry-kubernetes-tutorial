@@ -6,7 +6,7 @@ services:
       - "3000:3000"
     environment:
       BACKEND1_URL: http://backend1:5000/rolldice
-      BACKEND2_URL: http://backend2:80/rolldice
+      BACKEND2_URL: http://backend2:5165/rolldice
   backend1:
     build: ./backend1
     ports:
@@ -14,4 +14,4 @@ services:
   backend2:
     build: ./backend2
     ports:
-      - "5165:80"
+      - "5165:5165"
