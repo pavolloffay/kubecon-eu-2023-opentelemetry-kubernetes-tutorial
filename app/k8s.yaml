@@ -108,3 +108,26 @@ spec:
     targetPort: 3000
   selector:
     app: frontend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loadgen-deployment
+  labels:
+    app: loadgen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loadgen
+  template:
+    metadata:
+      labels:
+        app: loadgen
+    spec:
+      containers:
+      - name: frontend
+        image: ghcr.io/svrnm/kubecon-2023-loadgen:latest
+        env:
+          - name: URL
+            value: "http://frontend-service:3000/"
