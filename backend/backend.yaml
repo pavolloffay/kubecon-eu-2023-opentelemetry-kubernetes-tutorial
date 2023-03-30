@@ -1,0 +1,601 @@
+# send everything to http://otel-collector.observability-backend.svc.cluster.local:4317
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: observability-backend
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: collector-config
+  namespace: observability-backend
+data:
+  collector.yaml: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+      prometheus:
+        config:
+          scrape_configs:
+            - job_name: 'otel-collector'
+              scrape_interval: 10s
+              static_configs:
+                - targets: [ '0.0.0.0:8888' ]
+    processors:
+    exporters:
+      otlp:
+        endpoint: "http://tempo.observability-backend.svc.cluster.local:55680"
+        tls:
+          insecure: true
+      otlphttp/mimir:
+        endpoint: "http://mimir.observability-backend.svc.cluster.local:8080/otlp"
+      loki:
+        endpoint: "http://loki.observability-backend.svc.cluster.local:3100/loki/api/v1/push"
+      logging:
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          exporters: [otlp]
+        metrics:
+          receivers: [prometheus, otlp]
+          exporters: [otlphttp/mimir]
+        logs:
+          receivers: [otlp]
+          exporters: [loki, logging]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-collector
+  namespace: observability-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: otel-collector
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: otel-collector
+    spec:
+      containers:
+      - name: otelcol
+        args:
+        - --config=/conf/collector.yaml
+        image: otel/opentelemetry-collector-contrib:0.73.0
+        volumeMounts:
+        - mountPath: /conf
+          name: collector-config
+      volumes:
+      - configMap:
+          items:
+          - key: collector.yaml
+            path: collector.yaml
+          name: collector-config
+        name: collector-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: otel-collector
+  namespace: observability-backend
+spec:
+  ports:
+  - name: grpc-otlp
+    port: 4317
+    protocol: TCP
+    targetPort: 4317
+  selector:
+    app.kubernetes.io/name: otel-collector
+  type: ClusterIP
+---
+apiVersion: v1
+data:
+  loki.yaml: YXV0aF9lbmFibGVkOiBmYWxzZQpjaHVua19zdG9yZV9jb25maWc6CiAgICBtYXhfbG9va19iYWNrX3BlcmlvZDogMAppbmdlc3RlcjoKICAgIGNodW5rX2Jsb2NrX3NpemU6IDI2MjE0NAogICAgY2h1bmtfaWRsZV9wZXJpb2Q6IDNtCiAgICBjaHVua19yZXRhaW5fcGVyaW9kOiAxbQogICAgbGlmZWN5Y2xlcjoKICAgICAgICByaW5nOgogICAgICAgICAgICBrdnN0b3JlOgogICAgICAgICAgICAgICAgc3RvcmU6IGlubWVtb3J5CiAgICAgICAgICAgIHJlcGxpY2F0aW9uX2ZhY3RvcjogMQpsaW1pdHNfY29uZmlnOgogICAgZW5mb3JjZV9tZXRyaWNfbmFtZTogZmFsc2UKICAgIHJlamVjdF9vbGRfc2FtcGxlczogdHJ1ZQogICAgcmVqZWN0X29sZF9zYW1wbGVzX21heF9hZ2U6IDE2OGgKc2NoZW1hX2NvbmZpZzoKICAgIGNvbmZpZ3M6CiAgICAgICAgLSBmcm9tOiAiMjAxOC0wNC0xNSIKICAgICAgICAgIGluZGV4OgogICAgICAgICAgICBwZXJpb2Q6IDE2OGgKICAgICAgICAgICAgcHJlZml4OiBpbmRleF8KICAgICAgICAgIG9iamVjdF9zdG9yZTogZmlsZXN5c3RlbQogICAgICAgICAgc2NoZW1hOiB2OQogICAgICAgICAgc3RvcmU6IGJvbHRkYgpzZXJ2ZXI6CiAgICBodHRwX2xpc3Rlbl9wb3J0OiAzMTAwCnN0b3JhZ2VfY29uZmlnOgogICAgYm9sdGRiOgogICAgICAgIGRpcmVjdG9yeTogL2RhdGEvbG9raS9pbmRleAogICAgZmlsZXN5c3RlbToKICAgICAgICBkaXJlY3Rvcnk6IC9kYXRhL2xva2kvY2h1bmtzCnRhYmxlX21hbmFnZXI6CiAgICByZXRlbnRpb25fZGVsZXRlc19lbmFibGVkOiBmYWxzZQogICAgcmV0ZW50aW9uX3BlcmlvZDogMAo=
+kind: Secret
+metadata:
+  name: loki-config
+  namespace: observability-backend
+type: Opaque
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: loki
+  name: loki
+  namespace: observability-backend
+spec:
+  ports:
+  - name: loki-http-metrics
+    port: 3100
+    targetPort: 3100
+  selector:
+    name: loki
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: loki
+  namespace: observability-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: loki
+  serviceName: loki
+  template:
+    metadata:
+      labels:
+        name: loki
+    spec:
+      containers:
+      - args:
+        - -config.file=/etc/loki/loki.yaml
+        image: grafana/loki:2.0.0
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /ready
+            port: http-metrics
+          initialDelaySeconds: 45
+        name: loki
+        ports:
+        - containerPort: 3100
+          name: http-metrics
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: http-metrics
+          initialDelaySeconds: 45
+        volumeMounts:
+        - mountPath: /etc/loki
+          name: loki-config
+        - mountPath: /data
+          name: loki-data
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+      volumes:
+      - name: loki-data
+        persistentVolumeClaim:
+          claimName: loki-data
+      - name: loki-config
+        secret:
+          secretName: loki-config
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: loki-data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+---
+apiVersion: v1
+data:
+  overrides.yaml: |
+    overrides:
+  tempo.yaml: |
+    auth_enabled: false
+    compactor:
+        compaction:
+            compacted_block_retention: 24h
+    distributor:
+        receivers:
+            jaeger:
+                protocols:
+                    thrift_compact:
+                        endpoint: 0.0.0.0:6831
+            otlp:
+                protocols:
+                    grpc:
+                        endpoint: 0.0.0.0:55680
+    ingester: {}
+    server:
+        http_listen_port: 3200
+    storage:
+        trace:
+            backend: local
+            blocklist_poll: 30s
+            local:
+                path: /tmp/tempo/traces
+            wal:
+                path: /var/tempo/wal
+kind: ConfigMap
+metadata:
+  name: tempo
+  namespace: observability-backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: tempo
+  name: tempo
+  namespace: observability-backend
+spec:
+  ports:
+  - name: tempo-prom-metrics
+    port: 3200
+    targetPort: 3200
+  - name: tempo-otlp
+    port: 55680
+    protocol: TCP
+    targetPort: 55680
+  - name: http
+    port: 80
+    targetPort: 3200
+  - name: receiver
+    port: 6831
+    protocol: UDP
+    targetPort: 6831
+  selector:
+    app: tempo
+    name: tempo
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tempo
+  namespace: observability-backend
+spec:
+  minReadySeconds: 10
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: tempo
+      name: tempo
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  template:
+    metadata:
+      annotations:
+        config_hash: 7f4b5fad0e6364b6a2a5ea380281cb0e
+      labels:
+        app: tempo
+        name: tempo
+    spec:
+      containers:
+      - args:
+        - -config.file=/conf/tempo.yaml
+        - -mem-ballast-size-mbs=1024
+        env:
+        - name: JAEGER_AGENT_PORT
+          value: ""
+        image: grafana/tempo:main-e6394c3
+        imagePullPolicy: IfNotPresent
+        name: tempo
+        ports:
+        - containerPort: 3200
+          name: prom-metrics
+        - containerPort: 55680
+          name: otlp
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /conf
+          name: tempo-conf
+      volumes:
+      - configMap:
+          name: tempo
+        name: tempo-conf
+---
+apiVersion: v1
+data:
+  mimir.yaml: |
+    blocks_storage:
+        storage_prefix: blocks
+        tsdb:
+            dir: /data/tsdb
+    common:
+        storage:
+            filesystem:
+                dir: /data
+    ingester:
+        ring:
+            replication_factor: 1
+    multitenancy_enabled: false
+    server:
+        grpc_listen_port: 9095
+        http_listen_port: 8080
+kind: ConfigMap
+metadata:
+  name: mimir
+  namespace: observability-backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: mimir
+  name: mimir
+  namespace: observability-backend
+spec:
+  ports:
+  - name: mimir-prom-metrics
+    port: 8080
+    targetPort: 8080
+  - name: http
+    port: 80
+    targetPort: 8080
+  - name: grpc
+    port: 9095
+    targetPort: 9095
+  selector:
+    app: mimir
+    name: mimir
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mimir
+  namespace: observability-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mimir
+      name: mimir
+  serviceName: mimir
+  template:
+    metadata:
+      annotations:
+        config_hash: 379ac24872c3157214f0a463540dd3b5
+      labels:
+        app: mimir
+        name: mimir
+    spec:
+      containers:
+      - args:
+        - -config.file=/conf/mimir.yaml
+        image: grafana/mimir:2.4.0
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        name: mimir
+        ports:
+        - containerPort: 8080
+          name: prom-metrics
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        volumeMounts:
+        - mountPath: /conf
+          name: mimir-conf
+        - mountPath: /data
+          name: mimir-data
+      terminationGracePeriodSeconds: 60
+      volumes:
+      - configMap:
+          name: mimir
+        name: mimir-conf
+      - name: mimir-data
+        persistentVolumeClaim:
+          claimName: mimir-data
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: mimir-data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
+---
+apiVersion: v1
+data:
+  demo-overview-.json: '{}'
+kind: ConfigMap
+metadata:
+  labels: {}
+  name: dashboards-demo-0
+  namespace: observability-backend
+---
+apiVersion: v1
+data:
+  grafana.ini: |
+    [analytics]
+    reporting_enabled = false
+    [auth.anonymous]
+    enabled = true
+    org_role = Admin
+    [feature_toggles]
+    enable = traceToLogs
+    [log.frontend]
+    enabled = true
+    [server]
+    http_port = 3000
+    root_url = http://localhost:8080/grafana
+    router_logging = true
+    [users]
+    default_theme = light
+kind: ConfigMap
+metadata:
+  name: grafana-config
+  namespace: observability-backend
+---
+apiVersion: v1
+data:
+  dashboards.yml: |
+    apiVersion: 1
+    providers:
+        - disableDeletion: true
+          editable: false
+          folder: ""
+          name: dashboards
+          options:
+            path: /grafana/dashboards
+          orgId: 1
+          type: file
+        - disableDeletion: true
+          editable: false
+          folder: DEMO
+          name: dashboards-demo
+          options:
+            path: /grafana/dashboards-demo
+          orgId: 1
+          type: file
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-provisioning
+  namespace: observability-backend
+---
+apiVersion: v1
+data:
+  datasources.yml: |
+    apiVersion: 1
+    datasources:
+        - access: proxy
+          basicAuth: false
+          editable: false
+          isDefault: false
+          jsonData:
+            derivedFields:
+                - datasourceUid: tempo
+                  matcherRegex: (?:traceID|trace_id)=(\w+)
+                  name: TraceID
+                  url: $${__value.raw}
+            maxLines: 1000
+          name: Logs
+          type: loki
+          url: http://loki.observability-backend.svc.cluster.local:3100
+          version: 1
+        - access: proxy
+          basicAuth: false
+          editable: false
+          isDefault: true
+          jsonData:
+            disableMetricsLookup: false
+            exemplarTraceIdDestinations:
+                - datasourceUid: tempo
+                  name: traceID
+            httpMethod: POST
+          name: Metrics
+          type: prometheus
+          url: http://mimir.observability-backend.svc.cluster.local/prometheus
+          version: 1
+        - access: browser
+          basicAuth: false
+          editable: false
+          isDefault: false
+          jsonData:
+            tracesToLogs:
+                datasourceUid: Loki
+                tags:
+                    - job
+                    - instance
+                    - pod
+                    - namespace
+          name: Traces
+          type: tempo
+          uid: tempo
+          url: http://tempo.observability-backend.svc.cluster.local/
+          version: 1
+kind: ConfigMap
+metadata:
+  labels: {}
+  name: grafana-datasources
+  namespace: observability-backend
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels: {}
+  name: grafana-notification-channels
+  namespace: observability-backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: grafana
+  name: grafana
+  namespace: observability-backend
+spec:
+  ports:
+  - name: grafana-grafana-metrics
+    port: 3000
+    targetPort: 3000
+  - name: http
+    port: 80
+    targetPort: 3000
+  selector:
+    name: grafana
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: observability-backend
+spec:
+  minReadySeconds: 10
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: grafana
+  template:
+    metadata:
+      labels:
+        name: grafana
+    spec:
+      containers:
+      - env:
+        - name: GF_INSTALL_PLUGINS
+        - name: GF_PATHS_CONFIG
+          value: /etc/grafana-config/grafana.ini
+        image: grafana/grafana:9.2.3
+        imagePullPolicy: IfNotPresent
+        name: grafana
+        ports:
+        - containerPort: 3000
+          name: grafana-metrics
+        resources:
+          requests:
+            cpu: 10m
+            memory: 40Mi
+        volumeMounts:
+        - mountPath: /etc/grafana-config
+          name: grafana-config
+        - mountPath: /etc/grafana/provisioning/dashboards
+          name: grafana-dashboard-provisioning
+        - mountPath: /etc/grafana/provisioning/datasources
+          name: grafana-datasources
+        - mountPath: /etc/grafana/provisioning/notifiers
+          name: grafana-notification-channels
+      volumes:
+      - configMap:
+          name: grafana-config
+        name: grafana-config
+      - configMap:
+          name: grafana-dashboard-provisioning
+        name: grafana-dashboard-provisioning
+      - configMap:
+          name: grafana-datasources
+        name: grafana-datasources
+      - configMap:
+          name: grafana-notification-channels
+        name: grafana-notification-channels
