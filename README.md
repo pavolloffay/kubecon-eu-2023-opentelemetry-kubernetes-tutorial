@@ -4,3 +4,23 @@ Deploying an end-to-end observability system comes with many challenges. The org
 
 Schedule: https://kccnceu2023.sched.com/event/1HyZ3/
 Slides: https://docs.google.com/presentation/d/1oDpQo9KW_C5HznE0GR53P22HzP_SN2Ml/edit#slide=id.g227fe4440bd_0_0
+
+---
+
+## 1. Deploy demo observability backend
+
+After installing the observability backend, metrics, logs and traces can be sent via gRPC to `otel-collector.observability-backend.svc.cluster.local:4317` in otlp format.
+```bash
+kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/backend/backend.yaml
+```
+
+For visualisation, a grafana dashboard is available.
+```bash
+kubectl port-forward -n observability-backend svc/grafana 3000:3000
+```
+
+## 2. Deploy demo app
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/app/k8s.yaml
+```
