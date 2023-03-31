@@ -11,28 +11,26 @@ Slides: https://docs.google.com/presentation/d/1oDpQo9KW_C5HznE0GR53P22HzP_SN2Ml
 
 Welcome to the OpenTelemetry Kubernetes tutorial.
 
+Each tutorial step is located in a separate file:
+
+1. [OpenTelemetry Collector introduction](./01-collector-introduction.md)
+1. [OpenTelemetry Operator introduction](./02-operator-introduction.md)
+1. [Application instrumentation](./03-app-instrumentation.md)
+1. [Collecting metrics](./04-metrics.md)
+1. [Collecting logs](./05-logs.md)
+
 ### Prerequisites
 
 This tutorial requires a Kubernetes cluster, refer to [Kind](https://kind.sigs.k8s.io/docs/user/quick-start/) or [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster installations.
-
-#### Installing dependencies
-
-Install cert-manager (required by operator webhook) and OpenTelemetry operator:
-
-```bash
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml
-sleep 10
-kubectl apply -f https://github.com/open-telemetry/opentelemetry-operator/releases/download/v0.74.0/opentelemetry-operator.yaml
-```
 
 #### Deploy observability backend
 
 This tutorial uses Grafana Mimir, Loki and Tempo as observability backend to store metrics, logs and traces.
 
-After installing the observability backend OTLP metrics, logs and traces can be sent to the OpenTelemetry collector available at `otel-collector.observability-backend.svc.cluster.local:4317`.
+Deploy the backend systems:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/backend/backend.yaml
+kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/backend/01-backend.yaml
 ```
 
 For visualisation port forward Grafana:
