@@ -341,7 +341,7 @@ data:
     enabled = true
     [server]
     http_port = 3000
-    root_url = http://localhost:3000/grafana
+    root_url = http://localhost:8080/grafana
     router_logging = true
     [users]
     default_theme = light
