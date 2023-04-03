@@ -3,7 +3,7 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "3000:3000"
+      - "4000:4000"
     environment:
       BACKEND1_URL: http://backend1:5000/rolldice
       BACKEND2_URL: http://backend2:5165/rolldice
