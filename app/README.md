@@ -49,7 +49,7 @@ docker compose up
 
 This will build the images for all services + the load generator and then run
 them for you. You can test the frontend service yourself by calling it with
-your browser or curl at <http://localhost:3000?player1=alice&player2=bob>
+your browser or curl at <http://localhost:4000?player1=alice&player2=bob>
 
 ### Kubernetes
 
@@ -64,7 +64,7 @@ Note that this will pull images of the applications from ghcr.io.
 If you'd like to access the frontend service, open a new terminal and run
 
 ```console
-kubectl port-forward svc/frontend-service 3000:3000
+kubectl port-forward svc/frontend-service 4000:4000
 ```
 
 ### Development

@@ -96,7 +96,7 @@ spec:
           - name: BACKEND2_URL # TODO: point to service 2, once its runnable.
             value: "http://backend1-service:5000/rolldice"
         ports:
-        - containerPort: 3000
+        - containerPort: 4000
 ---
 apiVersion: v1
 kind: Service
@@ -104,8 +104,8 @@ metadata:
   name: frontend-service
 spec:
   ports:
-  - port: 3000
-    targetPort: 3000
+  - port: 4000
+    targetPort: 4000
   selector:
     app: frontend
 ---
@@ -130,4 +130,4 @@ spec:
         image: ghcr.io/svrnm/kubecon-2023-loadgen:latest
         env:
           - name: URL
-            value: "http://frontend-service:3000/"
+            value: "http://frontend-service:4000/"

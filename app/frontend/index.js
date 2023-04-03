@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const http = require("http");
-const port = process.env.FRONTEND_PORT || 3000;
+const port = process.env.FRONTEND_PORT || 4000;
 const backend1url =
   process.env.BACKEND1_URL || "http://localhost:5165/rolldice";
 const backend2url =
