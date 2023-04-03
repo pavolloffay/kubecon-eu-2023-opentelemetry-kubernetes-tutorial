@@ -1,4 +1,4 @@
-# OpenTelemetry Operator introduction
+# OpenTelemetry Operator introduction (Pavol)
 
 This tutorial step focuses on the OpenTelemetry operator introduction.
 
