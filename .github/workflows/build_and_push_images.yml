@@ -1,0 +1,45 @@
+name: "Build and Push Images"
+
+on:
+  push:
+    paths:
+      - 'app/**'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+strategy:
+  matrix:
+    tag:
+      - frontend
+      - backend1
+      - backend2
+      - loadgen
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push images
+        uses: docker/build-push-action@v3.3.0
+        with:
+          context: ./app/${matrix.tag}
+          file: ./app/${matrix.tag}/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ env.GHCR_REPO }}-${{ matrix.tag}}
+            
