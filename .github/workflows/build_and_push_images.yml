@@ -5,19 +5,19 @@ on:
     paths:
       - 'app/**'
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
-strategy:
-  matrix:
-    tag:
-      - frontend
-      - backend1
-      - backend2
-      - loadgen
-
 jobs:
+  env:
+    REGISTRY: ghcr.io
+    IMAGE_NAME: ${{ github.repository }}
+
+  strategy:
+    matrix:
+      tag:
+        - frontend
+        - backend1
+        - backend2
+        - loadgen
+
   build-and-push-image:
     runs-on: ubuntu-latest
     permissions:
