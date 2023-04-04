@@ -34,7 +34,7 @@ jobs:
       - name: Build and push images
         uses: docker/build-push-action@v3.3.0
         with:
-          context: ./app/${matrix.tag}
-          file: ./app/${matrix.tag}/Dockerfile
+          context: ./app/${{ matrix.tag }}
+          file: ./app/${{ matrix.tag }}/Dockerfile
           platforms: linux/amd64,linux/arm64
           tags: ghcr.io/${{ github.repository }}-${{ matrix.tag}}
