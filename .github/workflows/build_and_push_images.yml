@@ -2,8 +2,8 @@ name: "Build and Push Images"
 
 on:
   push:
-    paths:
-      - 'app/**'
+#    paths:
+#      - "app/**"
 
 jobs:
   build-and-push-image:
@@ -13,8 +13,8 @@ jobs:
       packages: write
 
     env:
-    REGISTRY: ghcr.io
-    IMAGE_NAME: ${{ github.repository }}
+      REGISTRY: ghcr.io
+      IMAGE_NAME: ${{ github.repository }}
 
     strategy:
       matrix:
@@ -42,4 +42,3 @@ jobs:
           file: ./app/${matrix.tag}/Dockerfile
           platforms: linux/amd64,linux/arm64
           tags: ${{ env.GHCR_REPO }}-${{ matrix.tag}}
-            
