@@ -14,7 +14,7 @@ There are 3 microservices within this application:
 - Service `backend1` in python, that has an API endpoint `/rolldice` which takes
   a player name as query parameter. The service returns a random number between
   1 and 6.
-- Service `backend2` in .NET, that also has an API endpoint `/rolldice` which
+- Service `backend2` in Java, that also has an API endpoint `/rolldice` which
   takes a player name as query parameter. The service returns a random number
   between 1 and 6.
 
@@ -70,7 +70,7 @@ kubectl port-forward svc/frontend-service 4000:4000
 ### Development
 
 If you'd like to change the code of any of the applications,
-you need to install Node.JS, .NET and python3 with flask first.
+you need to install Node.JS, Java and python3 with flask first.
 
 Then you can run them all standalone:
 
