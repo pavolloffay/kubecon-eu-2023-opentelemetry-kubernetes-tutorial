@@ -2,8 +2,8 @@ name: "Build and Push Images"
 
 on:
   push:
-#    paths:
-#      - "app/**"
+    paths:
+      - "app/**"
 
 jobs:
   build-and-push-image:
