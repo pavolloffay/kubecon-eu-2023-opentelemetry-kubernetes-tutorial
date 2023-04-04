@@ -47,6 +47,7 @@ jobs:
           context: ./app/${{ matrix.tag }}
           file: ./app/${{ matrix.tag }}/Dockerfile
           platforms: linux/amd64,linux/arm64
+          push: true
           tags: ghcr.io/${{ github.repository }}-${{ matrix.tag}}
           cache-from: type=gha
           cache-to: type=gha
