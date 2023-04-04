@@ -1,20 +1,22 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
-WORKDIR /App
+FROM gradle:7.6.1-jdk17 AS builder
 
-# Copy everything
-COPY . ./
-# Restore as distinct layers
-RUN dotnet restore
-# Build and publish a release
-RUN dotnet publish -c Release -o out
+WORKDIR /usr/src/app
 
-# Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
-WORKDIR /App
-COPY --from=build-env /App/out .
+COPY . .
+RUN gradle bootJar
 
-# https://stackoverflow.com/a/67111195
-ENV DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE=false
-ENV ASPNETCORE_URLS="http://*:5165"
+FROM eclipse-temurin:17-jre
 
-ENTRYPOINT ["dotnet", "backend2.dll"]
+WORKDIR /usr/src/app
+
+COPY --from=builder /usr/src/app/ .
+
+CMD ["java", "-jar", "./build/libs/dice-0.0.1-SNAPSHOT.jar"]
+
+# For debug purpose:
+# Comment the CMD above and uncomment the lines below to add the OTel java agent 
+# ADD https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar /javaagent.jar
+# ENV OTEL_TRACES_EXPORTER=logging 
+# ENV OTEL_METRICS_EXPORTER=logging 
+# ENV OTEL_LOGS_EXPORTER=logging
+# CMD ["java", "-javaagent:/javaagent.jar", "-jar", "./build/libs/dice-0.0.1-SNAPSHOT.jar"]
