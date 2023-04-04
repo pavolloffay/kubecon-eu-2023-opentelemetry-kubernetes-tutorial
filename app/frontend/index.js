@@ -1,15 +1,42 @@
-const express = require("express");
-const app = express();
+/*
+ Replace this block with your own setup of OTel SDK
+ */
+if(process.env.OTEL_INSTRUMENTATION_ENABLED === 'true') {
+    console.log('Run with instrumentation')
+    require('./instrument.js')
+}
+
+const { context, trace, metrics } = require('@opentelemetry/api');
 const http = require("http");
+const app = require("express")();
+const pino = require('pino-http')()
+
+app.use(pino)
+
 const port = process.env.FRONTEND_PORT || 4000;
 const backend1url =
   process.env.BACKEND1_URL || "http://localhost:5165/rolldice";
 const backend2url =
   process.env.BACKEND2_URL || "http://localhost:5000/rolldice";
 
+const myMeter = metrics.getMeter("app-meter");
+const gameCounter = myMeter.createCounter('app.game_counter')
+const winCounter = myMeter.createCounter('app.win_counter')
+
 app.get("/", (req, res) => {
   const { player1, player2 } = Object.assign({player1: "Player 1", player2: "Player 2"}, req.query)
-  console.log(player1, player2)
+  if(player1 == 'Player 1') {
+    req.log.info('Player 1 prefers to stay anonymous.')
+  }
+  if(player2 == 'Player 2') {
+    req.log.info('Player 2 prefers to stay anonymous.')
+  }
+  span = trace.getSpan(context.active())
+  if(span) {
+    span.setAttribute('app.player1', player1)
+    // TODO: Add an attribute for player2
+  }
+
   const p1 = new Promise((resolve, reject) => {
     http.get(`${backend1url}?player=${player1}`, (response) => {
       let data = [];
@@ -27,7 +54,8 @@ app.get("/", (req, res) => {
         }
       });
     }).on('error', (error) => {
-      reject(error)
+        req.log.error("Backend1 is not available.")
+        reject(error)
     }).end()
   });
 
@@ -48,23 +76,39 @@ app.get("/", (req, res) => {
         }
       });
     }).on('error', (error) => {
+      req.log.error("Backend2 is not available.")
       reject(error)
     }).end()
   });
 
   Promise.all([p1, p2]).then(([roll1, roll2]) => {
+    let winner = 'Nobody'
+    let winnerRolled = 0
     if (roll1 > roll2) {
-      res.end(`${player1} wins`);
+      winner = player1
+      winnerRolled = roll1
     } else if (roll2 > roll1) {
-      res.end(`${player2} wins`);
-    } else {
-      res.end("Nobody wins");
+      winner = player2
+      winnerRolled = roll2
     }
+    // TODO: Add the winner as a span attribute
+
+    // Count the total number of games
+    gameCounter.add(1);
+    
+    // Count how often each player wins
+    winCounter.add(1, {
+        "app.winner": winner,
+    });
+
+    // Add counters for numbers rolled and/or for players who played
+
+    res.end(`${winner} wins`);
   }).catch(error => {
     res.sendStatus(500).end()
   });
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  pino.logger.info(`Example app listening on port ${port}`);
 });
