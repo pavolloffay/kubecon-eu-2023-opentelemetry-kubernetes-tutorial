@@ -14,10 +14,11 @@ jobs:
 
     strategy:
       matrix:
-        tag:
+        app:
           - frontend
           - backend1
           - backend2
+          - backend3
           - loadgen
 
     steps:
@@ -44,10 +45,10 @@ jobs:
       - name: Build and push images
         uses: docker/build-push-action@v3.3.0
         with:
-          context: ./app/${{ matrix.tag }}
-          file: ./app/${{ matrix.tag }}/Dockerfile
+          context: ./app/${{ matrix.app }}
+          file: ./app/${{ matrix.app }}/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/${{ github.repository }}-${{ matrix.tag}}
+          tags: ghcr.io/${{ github.repository }}-${{ matrix.app }}
           cache-from: type=gha
           cache-to: type=gha
