@@ -100,7 +100,11 @@ app.get("/", (req, res) => {
 
     res.end(`${winner} wins`);
   }).catch(error => {
-    res.sendStatus(500).end()
+    try {
+      res.sendStatus(500).end()
+    } catch(e) {
+      // If sending the error fails, the service crashes, we want to avoid that!
+    }
   });
 });
 

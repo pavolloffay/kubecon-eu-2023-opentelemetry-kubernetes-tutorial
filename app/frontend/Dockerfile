@@ -7,7 +7,7 @@ COPY ["package.json", "package-lock.json*", "./"]
 
 RUN npm install --production
 
-COPY . .
+COPY ["index.js", "instrument.js", "run.sh", "./"]
 
 EXPOSE 4000
 

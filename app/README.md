@@ -51,6 +51,12 @@ This will build the images for all services + the load generator and then run
 them for you. You can test the frontend service yourself by calling it with
 your browser or curl at <http://localhost:4000?player1=alice&player2=bob>
 
+If you'd like to try out all services being instrumented with OpenTelemetry run
+
+```console
+docker compose --env-file=./otel-env up
+```
+
 ### Kubernetes
 
 To run the the sample application on your kubernetes cluster, run
