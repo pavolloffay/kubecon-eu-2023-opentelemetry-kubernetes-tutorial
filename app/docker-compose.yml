@@ -5,6 +5,7 @@ services:
     ports:
       - "4000:4000"
     environment:
+      OTEL_INSTRUMENTATION_ENABLED: true
       BACKEND1_URL: http://backend1:5000/rolldice
       BACKEND2_URL: http://backend2:5165/rolldice
   backend1:

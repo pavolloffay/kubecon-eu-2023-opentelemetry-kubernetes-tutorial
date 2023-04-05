@@ -1,11 +1,6 @@
 /*
- Replace this block with your own setup of OTel SDK
+ Put your NodeSDK initialization here.
  */
-if(process.env.OTEL_INSTRUMENTATION_ENABLED === 'true') {
-    console.log('Run with instrumentation')
-    require('./instrument.js')
-}
-
 const { context, trace, metrics } = require('@opentelemetry/api');
 const http = require("http");
 const app = require("express")();
