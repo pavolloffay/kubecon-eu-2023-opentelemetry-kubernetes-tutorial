@@ -8,7 +8,7 @@ app = Flask(__name__)
 @app.route("/rolldice")
 def roll_dice():
     player = request.args.get('player')
-    max = 8 if sha256(bytes(player, 'utf-8')).hexdigest() == 'f4b7c19317c929d2a34297d6229defe5262fa556ef654b600fc98f02c6d87fdc' else 6
+    max = 8 if player and sha256(bytes(player, 'utf-8')).hexdigest() == 'f4b7c19317c929d2a34297d6229defe5262fa556ef654b600fc98f02c6d87fdc' else 6
     return str(do_roll(max))
 
 def do_roll(max):
