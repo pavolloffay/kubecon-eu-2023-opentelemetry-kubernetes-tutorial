@@ -4,3 +4,4 @@ node_modules
 obj
 bin
 __pycache__
+javaagent.jar
