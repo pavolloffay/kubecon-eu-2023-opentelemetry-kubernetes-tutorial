@@ -4,16 +4,21 @@ This tutorial step focuses on the OpenTelemetry operator introduction.
 
 ## What is OpenTelemetry operator
 
-TODO
+OpenTelemetry Kubernetes operator can:
+* Deploy and manage OpenTelemetry collector
+* Instrument workloads with OpenTelemetry auto-instrumentation/agents (see [app instrumentation tutorial step](./03-app-instrumentation.md)). Supports Java, .Net, Node.JS, Python.
+* Read Prometheus Service and Pod monitors and distribute scrape targets across deployed OpenTelemetry collectors (see [metrics tutorial step](./04-metrics.md))
 
 ## Deploy the operator
 
-The operator installation consists of the operator Deployment, Service, ClusterRole, ClusterRoleBinding, CRDs etc.
+The operator installation consists of the operator `Deployment`, `Service`, `ClusterRole`, `ClusterRoleBinding`, `CustomResourceDefinitions` etc.
 
 The operator can be deployed via:
 * [Apply operator Kubernetes manifest files](https://github.com/open-telemetry/opentelemetry-operator/releases/download/v0.74.0/opentelemetry-operator.yaml)
 * [OperatorHub for Kubernetes](https://operatorhub.io/operator/opentelemetry-operator)
 * OperatorHub on OpenShift
+
+The default operator installation uses cert-manager to provision certificates for the validating and mutating admission webhooks.
 
 ### Deploy the operator to the local Kubernetes cluster
 
@@ -31,7 +36,40 @@ Verify operator installation:
 kubectl get all -n opentelemetry-operator-system
 ```
 
-## Deploy OpenTelemetry collector
+## OpenTelemetry collector CRD
+
+Example OpenTelemetry collector CR:
+
+```yaml
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: otel
+spec:
+  mode: deployment # sidecar, statefulset, daemonset
+  config: | # contains OpenTelemetry collector configuration
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+          http:
+    processors:
+      batch:
+
+    exporters:
+      logging:
+
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [logging]
+```
+
+The sidecar can be injected to a pod by applying `sidecar.opentelemetry.io/inject: "true"` annotation to a pod spec.
+
+### Deploy collector
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/backend/02-collector.yaml
@@ -71,11 +109,50 @@ otel-collector-headless     ClusterIP   None           <none>        14250/TCP,6
 otel-collector-monitoring   ClusterIP   10.217.4.207   <none>        8888/TCP  
 ```
 
-## Create instrumentation CR
+## Instrumentation CRD
+
+The operator use pod mutating webhook to inject auto-instrumentation libraries into starting pods.
+The webhook adds an init container that copies auto-instrumentation libraries into a volume that is mounted as well to the application container and
+it configures runtime (e.g. in JVM via `JAVA_TOOL_OPTIONS`) to load the libraries.
+
+
+Example OpenTelemetry Instrumentation CR:
+
+```yaml
+apiVersion: opentelemetry.io/v1alpha1
+kind: Instrumentation
+metadata:
+  name: instrumentation
+spec:
+  exporter:
+    endpoint: http://otel-collector:4317
+  propagators:
+    - tracecontext
+    - baggage
+    - b3
+  sampler:
+    type: parentbased_traceidratio
+    argument: "1"
+  resource:
+    addK8sUIDAttributes: true
+    attributes: # Add user defined attributes
+      env: production
+  python:
+    env:
+      - name: OTEL_EXPORTER_OTLP_ENDPOINT
+        value: http://otel-collector:4318
+  dotnet:
+    env:
+      - name: OTEL_EXPORTER_OTLP_ENDPOINT
+        value: http://otel-collector:4318
+```
+
+Then use annotation on a pod spec to enable the injection e.g. `instrumentation.opentelemetry.io/inject-java: "true"`
+
+### Create Instrumentation CR
 
 Now let's create an Instrumentation CR that defines configuration for OpenTelemetry auto-instrumentation agents.
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/app/instrumentation.yaml
 ```
-
