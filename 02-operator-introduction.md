@@ -6,7 +6,7 @@ This tutorial step focuses on the OpenTelemetry operator introduction.
 
 OpenTelemetry Kubernetes operator can:
 * Deploy and manage OpenTelemetry collector
-* Instrument workloads with OpenTelemetry auto-instrumentation/agents (see [app instrumentation tutorial step](./03-app-instrumentation.md)). Supports Java, .Net, Node.JS, Python.
+* Instrument workloads with OpenTelemetry auto-instrumentation/agents (see [app instrumentation tutorial step](./03-app-instrumentation.md)). Supports Java, .Net, Node.JS and Python.
 * Read Prometheus Service and Pod monitors and distribute scrape targets across deployed OpenTelemetry collectors (see [metrics tutorial step](./04-metrics.md))
 
 ## Deploy the operator
@@ -47,6 +47,10 @@ metadata:
   name: otel
 spec:
   mode: deployment # sidecar, statefulset, daemonset
+  autoscaler:
+    targetCPUUtilization: 90
+    minReplicas: 1
+    maxReplicas: 5
   config: | # contains OpenTelemetry collector configuration
     receivers:
       otlp:
