@@ -19,7 +19,13 @@ spec:
               scrape_interval: 10s
               static_configs:
                 - targets: [ '0.0.0.0:8888' ]
+    
     processors:
+      batch:
+      memory_limiter:
+        check_interval: 1s
+        limit_percentage: 50
+        spike_limit_percentage: 30
     
     exporters:
       otlp:
@@ -36,10 +42,13 @@ spec:
       pipelines:
         traces:
           receivers: [otlp]
+          processors: [memory_limiter, batch]
           exporters: [otlp]
         metrics:
           receivers: [prometheus, otlp]
+          processors: [memory_limiter, batch]
           exporters: [otlphttp/mimir]
         logs:
           receivers: [otlp]
+          processors: [memory_limiter, batch]
           exporters: [loki, logging]
