@@ -38,14 +38,18 @@ spec:
         endpoint: "http://loki.observability-backend.svc.cluster.local:3100/loki/api/v1/push"
       logging:
     
+    connectors:
+      spanmetrics:
+        namespace: "converted"
+    
     service:
       pipelines:
         traces:
           receivers: [otlp]
           processors: [memory_limiter, batch]
-          exporters: [otlp]
+          exporters: [otlp, spanmetrics]
         metrics:
-          receivers: [prometheus, otlp]
+          receivers: [prometheus, otlp, spanmetrics]
           processors: [memory_limiter, batch]
           exporters: [otlphttp/mimir]
         logs:
