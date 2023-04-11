@@ -102,8 +102,8 @@ spec:
         env:
           - name: BACKEND1_URL
             value: "http://backend1-service:5000/rolldice"
-          - name: BACKEND2_URL # TODO: point to service 2, once its runnable.
-            value: "http://backend1-service:5000/rolldice"
+          - name: BACKEND2_URL
+            value: "http://backend2-service:5000/rolldice"
         ports:
         - containerPort: 4000
 ---
