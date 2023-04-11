@@ -10,8 +10,8 @@ OpenTelemetry Kubernetes operator can:
 * Read Prometheus Service and Pod monitors and distribute scrape targets across deployed OpenTelemetry collectors (see [metrics tutorial step](./04-metrics.md))
 
 It manages two `CustomResourceDefinition`s (CRDs):
-* `opentelemetrycollectors.opentelemetry.io`
-* `instrumentations.opentelemetry.io`
+* `opentelemetrycollectors.opentelemetry.io`, short name `otelcol`
+* `instrumentations.opentelemetry.io`, short name `otelinst`
 
 ## Deploy the operator
 
