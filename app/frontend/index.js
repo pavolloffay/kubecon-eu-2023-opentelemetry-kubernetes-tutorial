@@ -15,8 +15,8 @@ const backend2url =
   process.env.BACKEND2_URL || "http://localhost:5000/rolldice";
 
 const myMeter = metrics.getMeter("app-meter");
-const gameCounter = myMeter.createCounter('app.game_counter')
-const winCounter = myMeter.createCounter('app.win_counter')
+const gameCounter = myMeter.createCounter('app_game_counter')
+const winCounter = myMeter.createCounter('app_win_counter')
 
 app.get("/", (req, res) => {
   const { player1, player2 } = Object.assign({player1: "Player 1", player2: "Player 2"}, req.query)
