@@ -1,8 +1,13 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tutorial-application
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend1-deployment
+  namespace: tutorial-application
   labels:
     app: backend1
 spec:
@@ -19,7 +24,7 @@ spec:
     spec:
       containers:
       - name: backend1
-        image: ghcr.io/frzifus/kubecon-2023-backend1:latest
+        image: ghcr.io/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial-backend1:latest 
         ports:
         - containerPort: 5000
 ---
@@ -27,6 +32,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: backend1-service
+  namespace: tutorial-application
 spec:
   ports:
   - port: 5000
@@ -38,6 +44,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend2-deployment
+  namespace: tutorial-application
   labels:
     app: backend2
 spec:
@@ -54,7 +61,7 @@ spec:
     spec:
       containers:
       - name: backend2
-        image: ghcr.io/frzifus/kubecon-2023-backend2:latest
+        image: ghcr.io/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial-backend2:latest
         ports:
         - containerPort: 5165
 ---
@@ -62,6 +69,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: backend2-service
+  namespace: tutorial-application
 spec:
   ports:
   - port: 5165
@@ -73,6 +81,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend-deployment
+  namespace: tutorial-application
   labels:
     app: frontend
 spec:
@@ -89,7 +98,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: ghcr.io/frzifus/kubecon-2023-frontend:latest
+        image: ghcr.io/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial-frontend:latest
         env:
           - name: BACKEND1_URL
             value: "http://backend1-service:5000/rolldice"
@@ -102,6 +111,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: frontend-service
+  namespace: tutorial-application
 spec:
   ports:
   - port: 4000
@@ -113,6 +123,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: loadgen-deployment
+  namespace: tutorial-application
   labels:
     app: loadgen
 spec:
@@ -127,7 +138,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: ghcr.io/svrnm/kubecon-2023-loadgen:latest
+        image: ghcr.io/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial-loadgen:latest
         env:
           - name: URL
             value: "http://frontend-service:4000/"
