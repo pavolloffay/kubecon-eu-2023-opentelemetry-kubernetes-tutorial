@@ -15,11 +15,11 @@ const backend2url =
   process.env.BACKEND2_URL || "http://localhost:5000/rolldice";
 
 const myMeter = metrics.getMeter("app-meter");
-const gameCounter = myMeter.createCounter('app_games_total', {
+const gameCounter = myMeter.createUpDownCounter('app_games_total', {
   description: "A counter of how often the game has been played",
   valueType: ValueType.INT
 })
-const winCounter = myMeter.createCounter('app_wins_total', {
+const winCounter = myMeter.createUpDownCounter('app_wins_total', {
   description: "A counter per player who has won",
   valueType: ValueType.INT
 })
