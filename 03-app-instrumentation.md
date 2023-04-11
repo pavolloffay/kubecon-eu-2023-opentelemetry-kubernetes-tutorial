@@ -5,7 +5,7 @@ This tutorial step focuses on instrumenting the services of the
 
 ## Manual instrumentation
 
-As a developer you can add OpenTelemetry to your code by using the.
+As a developer you can add OpenTelemetry to your code by using the
 language-specific SDKs.
 
 Here you will only instrument the frontend service manually, we will use
