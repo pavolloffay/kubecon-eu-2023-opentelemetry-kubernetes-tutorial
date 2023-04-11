@@ -1,6 +1,7 @@
 #!/bin/bash
 
 SLOWDOWN_IN_SECONDS=${SLOWDOWN_IN_SECONDS:-0.5}
+URL=${URL:-"http://frontend:4000/"}
 
 while true;
 do
