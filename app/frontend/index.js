@@ -1,7 +1,7 @@
 /*
  Put your NodeSDK initialization here.
  */
-const { context, trace, metrics } = require('@opentelemetry/api');
+const { context, trace, metrics, ValueType } = require('@opentelemetry/api');
 const http = require("http");
 const app = require("express")();
 const pino = require('pino-http')()
@@ -15,8 +15,14 @@ const backend2url =
   process.env.BACKEND2_URL || "http://localhost:5000/rolldice";
 
 const myMeter = metrics.getMeter("app-meter");
-const gameCounter = myMeter.createCounter('app_game_counter')
-const winCounter = myMeter.createCounter('app_win_counter')
+const gameCounter = myMeter.createCounter('app_games_total', {
+  description: "A counter of how often the game has been played",
+  valueType: ValueType.INT
+})
+const winCounter = myMeter.createCounter('app_wins_total', {
+  description: "A counter per player who has won",
+  valueType: ValueType.INT
+})
 
 app.get("/", (req, res) => {
   const { player1, player2 } = Object.assign({player1: "Player 1", player2: "Player 2"}, req.query)
