@@ -1,4 +1,4 @@
-# OpenTelemetry Operator introduction (Pavol)
+# OpenTelemetry Operator introduction
 
 This tutorial step focuses on the OpenTelemetry operator introduction.
 
@@ -8,6 +8,10 @@ OpenTelemetry Kubernetes operator can:
 * Deploy and manage OpenTelemetry collector
 * Instrument workloads with OpenTelemetry auto-instrumentation/agents (see [app instrumentation tutorial step](./03-app-instrumentation.md)). Supports Java, .Net, Node.JS and Python.
 * Read Prometheus Service and Pod monitors and distribute scrape targets across deployed OpenTelemetry collectors (see [metrics tutorial step](./04-metrics.md))
+
+It manages two `CustomResourceDefinition`s (CRDs):
+* `opentelemetrycollectors.opentelemetry.io`
+* `instrumentations.opentelemetry.io`
 
 ## Deploy the operator
 
@@ -26,14 +30,14 @@ Deploy OpenTelemetry operator to the cluster:
 
 ```bash
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml
-sleep 10 # wait until cert-manager is up and ready
+sleep 50 # wait until cert-manager is up and ready
 kubectl apply -f https://github.com/open-telemetry/opentelemetry-operator/releases/download/v0.74.0/opentelemetry-operator.yaml
 ```
 
 Verify operator installation:
 
 ```bash
-kubectl get all -n opentelemetry-operator-system
+kubectl get pods -w -n opentelemetry-operator-system
 ```
 
 ## OpenTelemetry collector CRD
@@ -46,11 +50,13 @@ kind: OpenTelemetryCollector
 metadata:
   name: otel
 spec:
-  mode: deployment # sidecar, statefulset, daemonset
+  mode: deployment # statefulset, daemonset, sidecar
   autoscaler:
     targetCPUUtilization: 90
     minReplicas: 1
     maxReplicas: 5
+  ingress:
+    hostname: ...
   config: | # contains OpenTelemetry collector configuration
     receivers:
       otlp:
@@ -79,11 +85,20 @@ The sidecar can be injected to a pod by applying `sidecar.opentelemetry.io/injec
 kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/backend/02-collector.yaml
 ```
 
+Verify the collector deployment:
+```bash
+kubectl get pods -n observability-backend -l app.kubernetes.io/component=opentelemetry-collector -w 
+```
+
 The collector is by default configured to export data to the observability backed that was deployed in the prerequisites section, however, the configuration can be changed to export data to any [other supported observability system](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter).
 
 The data to the collector can be pushed via `otel-collector` service in the `observability-backend` namespace. The full endpoint is `otel-collector.observability-backend.svc.cluster.local:4317`. The collector is by default configured to receive OpenTelemetry protocol (OTLP).
 
 ### Change collector configuration
+
+```bash
+kubectl edit opentelemetrycollectors.opentelemetry.io otel -n observability-backend 
+```
 
 Let's add Jaeger receiver:
 
@@ -106,7 +121,7 @@ Let's add Jaeger receiver:
 The collector pod should be re-deployed and the `otel-collector` service should expose more ports:
 
 ```bash
-kubectl get svc -n observability-backend                                                                                                                                                      ploffay@fedora
+kubectl get svc otel-collector -n observability-backend -o yaml
 NAME                        TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                                                             AGE
 otel-collector              ClusterIP   10.217.4.201   <none>        14250/TCP,6832/UDP,6831/UDP,14268/TCP,4317/TCP,4318/TCP,55681/TCP   5m15s
 otel-collector-headless     ClusterIP   None           <none>        14250/TCP,6832/UDP,6831/UDP,14268/TCP,4317/TCP,4318/TCP,55681/TCP   5m15s
