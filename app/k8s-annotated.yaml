@@ -19,6 +19,8 @@ spec:
     metadata:
       labels:
         app: backend1
+      annotations:
+        instrumentation.opentelemetry.io/inject-python: "true"
     spec:
       containers:
       - name: backend1
@@ -54,6 +56,8 @@ spec:
     metadata:
       labels:
         app: backend2
+      annotations:
+        instrumentation.opentelemetry.io/inject-java: "true"
     spec:
       containers:
       - name: backend2
@@ -89,6 +93,8 @@ spec:
     metadata:
       labels:
         app: frontend
+      annotations:
+        instrumentation.opentelemetry.io/inject-sdk: "true"
     spec:
       containers:
       - name: frontend
