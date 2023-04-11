@@ -99,7 +99,7 @@ spec:
           - name: BACKEND1_URL
             value: "http://backend1-service:5000/rolldice"
           - name: BACKEND2_URL
-            value: "http://backend2-service:5000/rolldice"
+            value: "http://backend2-service:5165/rolldice"
         ports:
         - containerPort: 4000
 ---
