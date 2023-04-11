@@ -594,38 +594,7 @@ data:
                 ]
               }
             },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "B"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "red",
-                      "mode": "fixed"
-                    }
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "A"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "green",
-                      "mode": "fixed"
-                    }
-                  }
-                ]
-              }
-            ]
+            "overrides": []
           },
           "gridPos": {
             "h": 9,
@@ -653,8 +622,8 @@ data:
                 "uid": "PA58DA793C7250F1B"
               },
               "editorMode": "builder",
-              "expr": "rate(otelcol_receiver_accepted_metric_points[$__rate_interval])",
-              "legendFormat": "accepted",
+              "expr": "sum by(receiver) (rate(otelcol_receiver_accepted_metric_points[$__rate_interval]))",
+              "legendFormat": "{{receiver}} metrics",
               "range": true,
               "refId": "A"
             },
@@ -664,14 +633,14 @@ data:
                 "uid": "PA58DA793C7250F1B"
               },
               "editorMode": "builder",
-              "expr": "rate(otelcol_receiver_refused_metric_points[$__rate_interval])",
+              "expr": "sum by(receiver) (rate(otelcol_receiver_accepted_spans[$__rate_interval]))",
               "hide": false,
-              "legendFormat": "refused",
+              "legendFormat": "{{receiver}} traces",
               "range": true,
-              "refId": "B"
+              "refId": "C"
             }
           ],
-          "title": "Metric Receiver",
+          "title": "Receiver Success",
           "type": "timeseries"
         },
         {
@@ -729,38 +698,7 @@ data:
                 ]
               }
             },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "B"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "red",
-                      "mode": "fixed"
-                    }
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byFrameRefID",
-                  "options": "A"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "green",
-                      "mode": "fixed"
-                    }
-                  }
-                ]
-              }
-            ]
+            "overrides": []
           },
           "gridPos": {
             "h": 9,
@@ -788,10 +726,11 @@ data:
                 "uid": "PA58DA793C7250F1B"
               },
               "editorMode": "builder",
-              "expr": "rate(otelcol_receiver_accepted_spans[$__rate_interval])",
-              "legendFormat": "accepted",
+              "expr": "sum by(receiver) (rate(otelcol_receiver_refused_spans[$__rate_interval]))",
+              "hide": false,
+              "legendFormat": "{{receiver}} traces",
               "range": true,
-              "refId": "A"
+              "refId": "B"
             },
             {
               "datasource": {
@@ -799,14 +738,14 @@ data:
                 "uid": "PA58DA793C7250F1B"
               },
               "editorMode": "builder",
-              "expr": "rate(otelcol_receiver_refused_spans[$__rate_interval])",
+              "expr": "sum by(receiver) (rate(otelcol_receiver_refused_metric_points[$__rate_interval]))",
               "hide": false,
-              "legendFormat": "refused",
+              "legendFormat": "{{receiver}} metrics",
               "range": true,
-              "refId": "B"
+              "refId": "A"
             }
           ],
-          "title": "Traces Receiver",
+          "title": "Receiver Refused",
           "type": "timeseries"
         },
         {
@@ -910,6 +849,331 @@ data:
             "x": 0,
             "y": 18
           },
+          "id": 21,
+          "panels": [],
+          "title": "Processors",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PA58DA793C7250F1B"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 19
+          },
+          "id": 23,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PA58DA793C7250F1B"
+              },
+              "editorMode": "builder",
+              "expr": "sum by(processor) (rate(otelcol_processor_accepted_metric_points[$__rate_interval]))",
+              "legendFormat": "{{processor}} metrics",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PA58DA793C7250F1B"
+              },
+              "editorMode": "builder",
+              "expr": "sum by(processor) (rate(otelcol_processor_accepted_spans[$__rate_interval]))",
+              "hide": false,
+              "legendFormat": "{{processor}} spans",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Processor Accepted",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PA58DA793C7250F1B"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 19
+          },
+          "id": 25,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PA58DA793C7250F1B"
+              },
+              "editorMode": "builder",
+              "expr": "sum by(processor) (rate(otelcol_processor_dropped_metric_points[$__rate_interval]))",
+              "legendFormat": "{{processor}} metrics",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PA58DA793C7250F1B"
+              },
+              "editorMode": "builder",
+              "expr": "sum by(processor) (rate(otelcol_processor_dropped_spans[$__rate_interval]))",
+              "hide": false,
+              "legendFormat": "{{processor}} traces",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Processor Dropped",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PA58DA793C7250F1B"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 19
+          },
+          "id": 27,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PA58DA793C7250F1B"
+              },
+              "editorMode": "builder",
+              "expr": "sum by(processor) (rate(otelcol_processor_refused_metric_points[$__rate_interval]))",
+              "legendFormat": "{{processor}} metrics",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PA58DA793C7250F1B"
+              },
+              "editorMode": "builder",
+              "expr": "sum by(processor) (rate(otelcol_processor_refused_spans[$__rate_interval]))",
+              "hide": false,
+              "legendFormat": "{{processor}} traces",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Processor Refused",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 27
+          },
           "id": 13,
           "panels": [],
           "title": "Exporters",
@@ -974,9 +1238,9 @@ data:
           },
           "gridPos": {
             "h": 8,
-            "w": 12,
+            "w": 8,
             "x": 0,
-            "y": 19
+            "y": 28
           },
           "id": 17,
           "options": {
@@ -1078,9 +1342,125 @@ data:
           },
           "gridPos": {
             "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 19
+            "w": 8,
+            "x": 8,
+            "y": 28
+          },
+          "id": 29,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PA58DA793C7250F1B"
+              },
+              "editorMode": "builder",
+              "expr": "sum by(exporter) (rate(otelcol_exporter_enqueue_failed_log_records[$__rate_interval]))",
+              "legendFormat": "{{exporter}} logs",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PA58DA793C7250F1B"
+              },
+              "editorMode": "builder",
+              "expr": "sum by(exporter) (rate(otelcol_exporter_enqueue_failed_metric_points[$__rate_interval]))",
+              "hide": false,
+              "legendFormat": "{{exporter}} metrics",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PA58DA793C7250F1B"
+              },
+              "editorMode": "builder",
+              "expr": "sum by(exporter) (rate(otelcol_exporter_enqueue_failed_spans[$__rate_interval]))",
+              "hide": false,
+              "legendFormat": "{{exporter}} traces",
+              "range": true,
+              "refId": "C"
+            }
+          ],
+          "title": "Exporter Enqueue Failures",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PA58DA793C7250F1B"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 28
           },
           "id": 4,
           "options": {
@@ -1107,10 +1487,23 @@ data:
                 "uid": "PA58DA793C7250F1B"
               },
               "editorMode": "builder",
-              "expr": "rate(otelcol_exporter_enqueue_failed_metric_points[$__rate_interval])",
-              "legendFormat": "{{exporter}}",
+              "expr": "sum by(exporter) (rate(otelcol_exporter_send_failed_metric_points[$__rate_interval]))",
+              "hide": false,
+              "legendFormat": "{{exporter}} metrics",
               "range": true,
-              "refId": "A"
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PA58DA793C7250F1B"
+              },
+              "editorMode": "builder",
+              "expr": "sum by(exporter) (rate(otelcol_exporter_send_failed_spans[$__rate_interval]))",
+              "hide": false,
+              "legendFormat": "{{exporter}} traces",
+              "range": true,
+              "refId": "C"
             }
           ],
           "title": "exporter failures",
@@ -1122,7 +1515,7 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 27
+            "y": 36
           },
           "id": 11,
           "panels": [],
@@ -1190,7 +1583,7 @@ data:
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 28
+            "y": 37
           },
           "id": 6,
           "options": {
@@ -1274,7 +1667,8 @@ data:
                     "value": 80
                   }
                 ]
-              }
+              },
+              "unit": "s"
             },
             "overrides": []
           },
@@ -1282,7 +1676,7 @@ data:
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 28
+            "y": 37
           },
           "id": 19,
           "options": {
