@@ -19,6 +19,8 @@ spec:
     metadata:
       labels:
         app: backend1
+      annotations:
+        instrumentation.opentelemetry.io/inject-python: "true"
     spec:
       containers:
       - name: backend1
@@ -54,6 +56,8 @@ spec:
     metadata:
       labels:
         app: backend2
+      annotations:
+        instrumentation.opentelemetry.io/inject-java: "true"
     spec:
       containers:
       - name: backend2
@@ -89,6 +93,8 @@ spec:
     metadata:
       labels:
         app: frontend
+      annotations:
+        instrumentation.opentelemetry.io/inject-sdk: "true"
     spec:
       containers:
       - name: frontend
@@ -98,8 +104,8 @@ spec:
             value: "true"
           - name: BACKEND1_URL
             value: "http://backend1-service:5000/rolldice"
-          - name: BACKEND2_URL
-            value: "http://backend2-service:5000/rolldice"
+          - name: BACKEND2_URL # TODO: point to service 2, once its runnable.
+            value: "http://backend1-service:5000/rolldice"
         ports:
         - containerPort: 4000
 ---
