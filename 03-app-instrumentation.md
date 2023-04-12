@@ -209,9 +209,38 @@ kubectl rollout restart deployment -n tutorial-application -l app=backend2
 
 ## Sampling
 
-TODO show how sampling is configured. Show that app needs to be restarted.
+Sampling in OpenTelemetry SDK and auto-instrumentations is configured via `OTEL_TRACES_SAMPLER` and `OTEL_TRACES_SAMPLER_ARG`.
+In our demo these environment variables are configured in the `Instrumentation` CR.
 
-TODO maybe show Jaeger remote sampler.
+Let's change the sampling rate (argument):
+
+```bash
+kubectl edit instrumentations.opentelemetry.io my-instrumentation -n tutorial-application
+```
+
+```bash
+spec:
+  sampler:
+    type: parentbased_traceidratio
+    argument: "0.25"
+```
+
+Restart of applications is required again, the OTEL environment variables are set only at the pod startup:
+
+```bash
+kubectl rollout restart deployment -n tutorial-application -l app=backend1
+kubectl rollout restart deployment -n tutorial-application -l app=backend2
+```
+
+### Remotely configurable sampling
+
+Jaeger remote sampler allows dynamically configure OpenTelemetry SDKs. 
+The collector can be configured with Jaeger remote sampler extension that exposes
+an endpoint for SDKs to retrieve sampling configuration per service and span operation name.
+
+* [Jaeger remote sampler spec](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/sdk.md#jaegerremotesampler)
+* [SDK sampler configuration](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/sdk-environment-variables.md#general-sdk-configuration)
+* [Collector Jaeger remote sampler extension](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/extension/jaegerremotesampling)
 
 ## PII
 
