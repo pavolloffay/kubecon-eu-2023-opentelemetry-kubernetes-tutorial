@@ -1,4 +1,4 @@
-# OpenTelemetry Operator introduction
+# OpenTelemetry Operator introduction (10 mins)
 
 This tutorial step focuses on the OpenTelemetry operator introduction.
 

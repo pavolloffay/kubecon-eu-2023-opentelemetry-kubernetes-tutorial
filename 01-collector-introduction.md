@@ -1,4 +1,4 @@
-# OpenTelemetry Collector introduction (Bene)
+# OpenTelemetry Collector introduction (Bene, 10mins)
 
 This tutorial step focuses on OpenTelemetry collector introduction.
 

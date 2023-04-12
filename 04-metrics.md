@@ -1,4 +1,4 @@
-# Metrics (Kristina)
+# Metrics (Kristina, 15 mins)
 
 ## Auto-instrumentation and metrics
 
