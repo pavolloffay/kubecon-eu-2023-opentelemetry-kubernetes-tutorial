@@ -273,7 +273,7 @@ spec:
       containers:
       - args:
         - -config.file=/conf/mimir.yaml
-        image: grafana/mimir:2.4.0
+        image: grafana/mimir:2.7.1
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
