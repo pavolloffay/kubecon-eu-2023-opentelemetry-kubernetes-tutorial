@@ -118,7 +118,7 @@ auto-instrumentation for you.
 
 With the operator & collector running you can now let the Operator know,
 what pods to instrument and which auto-instrumentation to use for those pods.
-This is done via the `Instrumentation` CRD. A basic Instrumentation resource
+This is done via the `Instrumentation` CRD. A basic `Instrumentation` resource
 looks like the following:
 
 ```yaml
@@ -155,7 +155,7 @@ Now verify the instrumentation:
 kubectl get pods -n tutorial-application -l app=backend1 -o yaml
 ```
 
-and [access traces](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22nativeSearch%22,%22serviceName%22:%22backend1-deployment%22,%22spanName%22:%22%2Frolldice%22%7D,%7B%22refId%22:%22B%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22traceId%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D)
+and [access traces](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22nativeSearch%22,%22serviceName%22:%22backend1-deployment%22,%22spanName%22:%22%2Frolldice%22%7D,%7B%22refId%22:%22B%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22traceId%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D).
 
 ### Instrument Java - backend2 service
 
@@ -169,11 +169,11 @@ Now verify the instrumentation:
 kubectl get pods -n tutorial-application -l app=backend2 -o yaml
 ```
 
-and [access traces](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22nativeSearch%22,%22serviceName%22:%22backend2-deployment%22%7D,%7B%22refId%22:%22B%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22traceId%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D)
+and [access traces](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22nativeSearch%22,%22serviceName%22:%22backend2-deployment%22%7D,%7B%22refId%22:%22B%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22traceId%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D).
 
 ## Resource attributes
 
-There are several ways how essential Kubernetes resource attributes (`Namespace`, `Deployment`, `ReplicaSet`, `Pod` name) can be collected:
+There are several ways how essential Kubernetes resource attributes (`Namespace`, `Deployment`, `ReplicaSet`, `Pod` name and UIDs) can be collected:
 
 * The `Instrumentation` CR - operator injects the attributes to the application container via `OTEL_RESOURCE_ATTRIBUTES` env var. The OpenTelemetry SDK used in the auto-instrumentation reads the variable.
 * The `OpenTelemetryCollector` CR - the [k8sattributesprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/k8sattributesprocessor) enriches spans with attributes in the collector
@@ -218,13 +218,12 @@ spec:
       value: k8s.container.name=backend2,k8s.deployment.name=backend2-deployment,k8s.namespace.name=tutorial-application,k8s.node.name=$(OTEL_RESOURCE_ATTRIBUTES_NODE_NAME),k8s.pod.name=$(OTEL_RESOURCE_ATTRIBUTES_POD_NAME),k8s.replicaset.name=backend2-deployment-58cfcb8db7
 ```
 
-Let's enable collection of Kubernetes UID attributes:
+Let's enable collection of Kubernetes UID attributes. Update the `Instrumentation` CR:
 
 ```bash
 kubectl edit instrumentations.opentelemetry.io my-instrumentation -n tutorial-application 
 ```
 
-update the `Instrumentation` CR:
 
 ```yaml
 spec:
@@ -243,10 +242,10 @@ kubectl rollout restart deployment -n tutorial-application -l app=backend2
 
 ## Sampling
 
-Sampling in OpenTelemetry SDK and auto-instrumentations is configured via `OTEL_TRACES_SAMPLER` and `OTEL_TRACES_SAMPLER_ARG`.
+Sampling in OpenTelemetry SDK and auto-instrumentations is configured via `OTEL_TRACES_SAMPLER` and `OTEL_TRACES_SAMPLER_ARG` environment variables.
 In our demo these environment variables are configured in the `Instrumentation` CR.
 
-Let's change the sampling rate (argument):
+Let's change the sampling rate (argument) to sample 25% of requests:
 
 ```bash
 kubectl edit instrumentations.opentelemetry.io my-instrumentation -n tutorial-application
@@ -259,14 +258,14 @@ spec:
     argument: "0.25"
 ```
 
-All possible values of `type` and `argument` are defined in [SDK configuration](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/sdk-environment-variables.md#general-sdk-configuration)
-
 Restart of applications is required again, the OTEL environment variables are set only at the pod startup:
 
 ```bash
 kubectl rollout restart deployment -n tutorial-application -l app=backend1
 kubectl rollout restart deployment -n tutorial-application -l app=backend2
 ```
+
+All possible values of `type` and `argument` are defined in [SDK configuration](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/sdk-environment-variables.md#general-sdk-configuration)
 
 ### Remotely configurable sampling
 
@@ -280,7 +279,7 @@ an endpoint for SDKs to retrieve sampling configuration per service and span ope
 
 ## PII and data manipulation
 
-Collector can add, change and/or remove data that is flowing through the collector (spans, attributes etc.). This is useful to extract new attributes that can be used later for querying or remove user sensitive data (PII).
+The collector can add, change and/or remove data that is flowing through it (spans, attributes etc.). This is useful to extract new attributes that can be later used for querying. Second use-case for data manipulation is to handle personally identifiable information (PII).
 
 The following collector processors can be used for data manipulation:
 

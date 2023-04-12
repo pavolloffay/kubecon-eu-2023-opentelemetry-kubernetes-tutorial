@@ -6,8 +6,8 @@ This tutorial step focuses on the OpenTelemetry operator introduction.
 
 OpenTelemetry Kubernetes operator can:
 * Deploy and manage OpenTelemetry collector
-* Instrument workloads with OpenTelemetry auto-instrumentation/agents (see [app instrumentation tutorial step](./03-app-instrumentation.md)). Supports Java, .Net, Node.JS and Python.
-* Read Prometheus Service and Pod monitors and distribute scrape targets across deployed OpenTelemetry collectors (see [metrics tutorial step](./04-metrics.md))
+* Instrument workloads with OpenTelemetry auto-instrumentation/agents (see [app instrumentation tutorial step](./03-app-instrumentation.md)). Supports `Java`, `.Net`, `Node.JS` and `Python`.
+* Read Prometheus `podmonitor.monitoring.coreos.com` and `servicemonitor.monitoring.coreos.com` and distribute scrape targets across deployed OpenTelemetry collectors (see [metrics tutorial step](./04-metrics.md))
 
 It manages two `CustomResourceDefinition`s (CRDs):
 * `opentelemetrycollectors.opentelemetry.io`, short name `otelcol`
