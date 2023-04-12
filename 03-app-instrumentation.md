@@ -176,6 +176,8 @@ Now verify that it worked:
 kubectl get pods -n tutorial-application -l app=frontend -o yaml
 ```
 
+and [access traces](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22nativeSearch%22,%22serviceName%22:%22frontend-deployment%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D).
+
 ### Instrument Python - backend1 service
 
 ```bash
