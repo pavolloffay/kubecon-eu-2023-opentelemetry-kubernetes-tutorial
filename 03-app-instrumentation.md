@@ -244,6 +244,31 @@ an endpoint for SDKs to retrieve sampling configuration per service and span ope
 * [SDK sampler configuration](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/sdk-environment-variables.md#general-sdk-configuration)
 * [Collector Jaeger remote sampler extension](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/extension/jaegerremotesampling)
 
-## PII
+## PII and data manipulation
 
-TODO show how to remove PII with processors.
+Collector can add, change and/or remove data that is flowing through the collector (spans, attributes etc.). This is useful to extract new attributes that can be used later for querying or remove user sensitive data (PII).
+
+The following collector processors can be used for data manipulation:
+
+* [attributesprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/attributesprocessor) removes attributes. 
+* [filterprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/filterprocessor) removes spans and attributes. It supports regex.
+
+Now let's edit the collector configuration to extract player's name from `http.target` attribute:
+
+```bash
+kubectl edit opentelemetrycollectors.opentelemetry.io otel -n observability-backend 
+```
+
+```yaml
+  processors:
+    attributes:
+      actions:
+      - key: "http.target"
+        pattern: ^.*\?player=(?P<player>.*)
+        action: extract
+          
+    service:
+      pipelines:
+        traces:
+          processors: [memory_limiter, attributes, batch]
+```
