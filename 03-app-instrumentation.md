@@ -71,6 +71,12 @@ deployment.apps/backend2-deployment   1/1     1            1           39m
 
 ### Port forward
 
+Now let's port forward the frontend application:
+
+```bash
+kubectl port-forward -n tutorial-application svc/frontend-service 4000:4000
+```
+
 ## Auto-instrumentation
 
 The OpenTelemetry Operator supports injecting and configuring
@@ -115,9 +121,91 @@ Now verify the instrumentation:
 kubectl get pods -n tutorial-application -l app=backend1 -o yaml
 ```
 
+and [access traces](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22nativeSearch%22,%22serviceName%22:%22backend1-deployment%22,%22spanName%22:%22%2Frolldice%22%7D,%7B%22refId%22:%22B%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22traceId%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D)
+
+### Instrument Java - backend2 service
+
+```bash
+kubectl patch deployment backend2-deployment -n tutorial-application -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-java":"true"}}}} }'
+```
+
+Now verify the instrumentation:
+
+```bash
+kubectl get pods -n tutorial-application -l app=backend2 -o yaml
+```
+
+and [access traces](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22nativeSearch%22,%22serviceName%22:%22backend2-deployment%22%7D,%7B%22refId%22:%22B%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22traceId%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D)
+
 ## Resource attributes
 
-TODO show how Kubernetes resource attributes are collected.
+There are several ways how essential Kubernetes resource attributes (`Namespace`, `Deployment`, `ReplicaSet`, `Pod` name) can be collected:
+
+* The `Instrumentation` CR - operator injects the attributes to the application container via `OTEL_RESOURCE_ATTRIBUTES` env var. The OpenTelemetry SDK used in the auto-instrumentation reads the variable.
+* The `OpenTelemetryCollector` CR - the [k8sattributesprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/k8sattributesprocessor) enriches spans with attributes in the collector
+* The `OpenTelemetryCollector` CR - in the sidecar mode use [resourcedetection](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/resourcedetectionprocessor). The operator sets `OTEL_RESOURCE_ATTRIBUTES` with Kubernetes resource attributes and the variable can be consumed by `env` detector see [the blog post](https://opentelemetry.io/blog/2022/k8s-metadata/#using-resource-detector-processor) for more details.
+
+Kubernetes resource attributes like  are set 
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    instrumentation.opentelemetry.io/inject-java: "true"
+  name: backend2-deployment-58cfcb8db7-tdc8v
+  namespace: tutorial-application
+spec:
+  containers:
+  - env:
+    - name: JAVA_TOOL_OPTIONS
+      value: ' -javaagent:/otel-auto-instrumentation/javaagent.jar'
+    - name: OTEL_SERVICE_NAME
+      value: backend2-deployment
+    - name: OTEL_EXPORTER_OTLP_ENDPOINT
+      value: http://otel-collector.observability-backend.svc.cluster.local:4317
+    - name: OTEL_RESOURCE_ATTRIBUTES_POD_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.name
+    - name: OTEL_RESOURCE_ATTRIBUTES_NODE_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.nodeName
+    - name: OTEL_PROPAGATORS
+      value: tracecontext,baggage,b3
+    - name: OTEL_TRACES_SAMPLER
+      value: parentbased_traceidratio
+    - name: OTEL_TRACES_SAMPLER_ARG
+      value: "1"
+    - name: OTEL_RESOURCE_ATTRIBUTES
+      value: k8s.container.name=backend2,k8s.deployment.name=backend2-deployment,k8s.namespace.name=tutorial-application,k8s.node.name=$(OTEL_RESOURCE_ATTRIBUTES_NODE_NAME),k8s.pod.name=$(OTEL_RESOURCE_ATTRIBUTES_POD_NAME),k8s.replicaset.name=backend2-deployment-58cfcb8db7
+```
+
+Let's enable collection of Kubernetes UID attributes:
+
+```bash
+kubectl edit instrumentations.opentelemetry.io my-instrumentation -n tutorial-application 
+```
+
+update the `Instrumentation` CR:
+
+```yaml
+spec:
+  resource:
+    addK8sUIDAttributes: true
+```
+
+The resource attributes are injected to the application container, to apply the change on already running applications a restart is required:
+
+```bash
+kubectl rollout restart deployment -n tutorial-application -l app=backend1
+kubectl rollout restart deployment -n tutorial-application -l app=backend2
+```
+
+![Traces in Grafana](./images/grafana-traces-resoure.jpg)
 
 ## Sampling
 

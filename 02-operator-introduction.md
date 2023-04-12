@@ -103,7 +103,7 @@ kubectl edit opentelemetrycollectors.opentelemetry.io otel -n observability-back
 Let's add Jaeger receiver:
 
 ```yaml
-   receivers:
+    receivers:
       jaeger:
         protocols:
           grpc:
