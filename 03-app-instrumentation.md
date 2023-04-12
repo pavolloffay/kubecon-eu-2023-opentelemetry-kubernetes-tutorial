@@ -11,12 +11,37 @@ language-specific SDKs.
 Here you will only instrument the frontend service manually, we will use
 automatic instrumentation for the other services in the next step.
 
+Before starting, make sure that you have an OpenTelemetry collector up and running
+locally, as described in the [OpenTelemetry Collector introduction](./01-collector-introduction.md)
+
+For development you can run the app locally by installing all dependencies
+and running it with `nodemon` from the [./app/frontend](./app/frontend/) directory:
+
+```bash
+$ cd app/frontend
+$ npm install
+$ npx nodemon index.js
+{"level":30,"time":...,"pid":...,"hostname":"...","msg":"Example app listening on port 4000"}
+```
+
+If you don't have Node.JS installed locally, you can use a container for development:
+
+```bash
+$ cd app/frontend
+$ docker run --network=host --rm -t -i -v ${PWD}:/app node:18-alpine /bin/sh
+# Within the container
+$ cd /app
+$ npm install
+$ npx nodemon index.js
+{"level":30,"time":...,"pid":20,"hostname":"...","msg":"Example app listening on port 4000"}
+```
+
 Open the [index.js](./app/frontend/index.js) file with your preferred editor.
 Use the instructions provided by the
 [official OpenTelemetry documentation](https://opentelemetry.io/docs/instrumentation/js/getting-started/nodejs/)
 to add tracing & metrics. A few differences in your implementation:
 
-- Instead of creating a dedicated `tracing.js` you can add the initialization of the SDK at the top of `index.js` directly.
+- Instead of creating a dedicated `instrument.js` you can add the initialization of the SDK at the top of `index.js` directly.
 - Replace the `ConsoleSpanExporter` with an `OTLPTraceExporter` as outlined in the [Exporters](https://opentelemetry.io/docs/instrumentation/js/exporters/) documentation (make use of `opentelemetry/exporter-metrics-otlp-grpc` & `opentelemetry/exporter-trace-otlp-grpc`)
 - Add a `metricReader` to your SDK initialization:
   
@@ -31,7 +56,16 @@ to add tracing & metrics. A few differences in your implementation:
 Give it a try yourself, if you are unsure how to accomplish this, you can peek
 into the [instrument.js](./app/frontend/instrument.js) file.
 
-Run that application either locally or by rebuilding the underlying container.
+To see if spans are emitted to the collector, call the frontend service via your
+browser or curl:
+
+```
+$ curl localhost:4000/
+Internal Server Error
+```
+
+The **Internal Server Error** is OK for now, because you don't have the backends
+running.
 
 If all works, your OpenTelemetry collector should receive metrics & traces and
 the logs of the frontend service should contain `trace_id` and `span_id`
