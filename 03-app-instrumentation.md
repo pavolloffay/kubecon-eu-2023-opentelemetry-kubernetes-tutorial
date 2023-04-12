@@ -1,4 +1,4 @@
-# Deploy the application (Severin, Pavol)
+# Deploy the application (Severin, Pavol, 30 mins)
 
 This tutorial step focuses on instrumenting the services of the
 [sample application](./app).
@@ -44,7 +44,7 @@ Finally, look into the `index.js` file once again, there are a few additional
 Run the following command to deploy the sample application to your cluster:
 
 ```bash
-kubectl -f https://github.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/blob/main/app/k8s.yaml
+kubectl apply -f https://github.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/blob/main/app/k8s.yaml
 ```
 
 After a short while, verify that it has been deployed successfully:
@@ -69,13 +69,15 @@ deployment.apps/frontend-deployment   1/1     1            1           39m
 deployment.apps/backend2-deployment   1/1     1            1           39m
 ```
 
+### Port forward
+
 ## Auto-instrumentation
 
 The OpenTelemetry Operator supports injecting and configuring
 auto-instrumentation for you.
 
 With the operator & collector running you can now let the Operator know,
-what pods to instrument and which autoinstruemntation to use for those pods.
+what pods to instrument and which auto-instrumentation to use for those pods.
 This is done via the Instrumentation CRD. A basic Instrumentation resource
 looks like the following:
 
@@ -90,16 +92,28 @@ spec:
     endpoint: http://otel-collector.observability-backend.svc.cluster.local:4317
 ```
 
-To create a Instrumentation resource for our sample application run the following
-command
+To create an Instrumentation resource for our sample application run the following
+command:
 
-```
+```bash
 kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/app/instrumentation.yaml
 ```
 
 Until now we only have created the Instrumentation resource, in a next step you
-need to opt-in your services for autoinstrumentation. This is done by updating
+need to opt-in your services for auto-instrumentation. This is done by updating
 your service's `spec.template.metadata.annotations`
+
+### Instrument Python - backend1 service
+
+```bash
+kubectl patch deployment backend1-deployment -n tutorial-application -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-python":"true"}}}} }'
+```
+
+Now verify the instrumentation:
+
+```bash
+kubectl get pods -n tutorial-application -l app=backend1 -o yaml
+```
 
 ## Resource attributes
 
