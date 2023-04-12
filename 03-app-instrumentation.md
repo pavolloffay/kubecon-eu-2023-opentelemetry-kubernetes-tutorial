@@ -225,6 +225,8 @@ spec:
     argument: "0.25"
 ```
 
+All possible values of `type` and `argument` are defined in [SDK configuration](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/sdk-environment-variables.md#general-sdk-configuration)
+
 Restart of applications is required again, the OTEL environment variables are set only at the pod startup:
 
 ```bash
