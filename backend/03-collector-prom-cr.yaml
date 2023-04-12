@@ -1,0 +1,141 @@
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: otel-prom-cr
+  namespace: observability-backend
+spec:
+  image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.74.0
+  mode: statefulset
+  replicas: 1
+  targetAllocator:
+    enabled: true
+    allocationStrategy: "consistent-hashing"
+    replicas: 1
+    image: ghcr.io/open-telemetry/opentelemetry-operator/target-allocator:0.74.0
+    serviceAccount: otel-collector-targetallocator
+    prometheusCR:
+      enabled: true
+  ports:
+    - port: 8888
+      protocol: TCP
+      name: metrics
+  config: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+          http:
+      prometheus:
+        config:
+          scrape_configs:
+            - job_name: 'otel-collector'
+              scrape_interval: 10s
+              static_configs:
+                - targets: [ '0.0.0.0:8888' ]
+    
+    processors:
+      batch:
+      memory_limiter:
+        check_interval: 1s
+        limit_percentage: 50
+        spike_limit_percentage: 10
+    
+    exporters:
+      otlp:
+        endpoint: "http://tempo.observability-backend.svc.cluster.local:55680"
+        tls:
+          insecure: true
+      otlphttp/mimir:
+        endpoint: "http://mimir.observability-backend.svc.cluster.local:8080/otlp"
+      loki:
+        endpoint: "http://loki.observability-backend.svc.cluster.local:3100/loki/api/v1/push"
+      logging:
+    
+    service:
+      pipelines:
+        metrics:
+          receivers: [prometheus, otlp]
+          processors: [memory_limiter, batch]
+          exporters: [otlphttp/mimir]
+        logs:
+          receivers: [otlp]
+          processors: [memory_limiter, batch]
+          exporters: [loki, logging]
+      telemetry:
+        logs:
+          level: info
+          initial_fields:
+            service: otel-collector
+          output_paths: [stdout]
+        metrics:
+          level: detailed
+          address: 0.0.0.0:8888
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: otel-prom-cr-collector
+rules:
+  - apiGroups: [""]
+    resources:
+      - nodes
+      - nodes/proxy
+      - nodes/metrics
+      - services
+      - endpoints
+      - pods
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["monitoring.coreos.com"]
+    resources:
+      - servicemonitors
+      - podmonitors
+    verbs: ["get", "list", "watch"]
+  - apiGroups:
+      - extensions
+    resources:
+      - ingresses
+    verbs: ["get", "list", "watch"]
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - ingresses
+    verbs: ["get", "list", "watch"]
+  - nonResourceURLs: ["/metrics", "/metrics/cadvisor"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: otel-prom-cr-collector
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: otel-prom-cr-collector
+subjects:
+  - kind: ServiceAccount
+    # quirk of the Operator
+    name: otel-prom-cr-collector
+    namespace: observability-backend
+  - kind: ServiceAccount
+    name: otel-collector-targetallocator
+    namespace: observability-backend
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: frontend-service
+  namespace: tutorial-application
+  labels:
+    env: production
+spec:
+  selector:
+    matchLabels:
+      app: frontend
+  namespaceSelector:
+    matchNames:
+      - tutorial-application
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 20s
+      scrapeTimeout: 10s
