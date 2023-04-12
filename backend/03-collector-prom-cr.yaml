@@ -6,11 +6,11 @@ metadata:
 spec:
   image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.74.0
   mode: statefulset
-  replicas: 1
+  replicas: 3
   targetAllocator:
     enabled: true
     allocationStrategy: "consistent-hashing"
-    replicas: 1
+    replicas: 2
     image: ghcr.io/open-telemetry/opentelemetry-operator/target-allocator:0.74.0
     prometheusCR:
       enabled: true
@@ -31,6 +31,12 @@ spec:
               scrape_interval: 10s
               static_configs:
                 - targets: [ '0.0.0.0:8888' ]
+        target_allocator:
+          endpoint: http://otel-prom-cr-targetallocator:80
+          interval: 30s
+          collector_id: ${POD_NAME}
+          http_sd_config:
+            refresh_interval: 60s
     
     processors:
       batch:
@@ -122,23 +128,3 @@ subjects:
   - kind: ServiceAccount
     name: otel-prom-cr-targetallocator
     namespace: observability-backend
----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: frontend-service
-  namespace: tutorial-application
-  labels:
-    env: production
-spec:
-  selector:
-    matchLabels:
-      app: frontend
-  namespaceSelector:
-    matchNames:
-      - tutorial-application
-  endpoints:
-    - port: http
-      path: /metrics
-      interval: 20s
-      scrapeTimeout: 10s

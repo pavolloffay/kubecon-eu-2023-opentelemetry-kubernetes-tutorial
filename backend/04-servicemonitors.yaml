@@ -1,0 +1,65 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: backend1-service
+  namespace: tutorial-application
+spec:
+  selector:
+    matchLabels:
+      app: backend1
+  namespaceSelector:
+    matchNames:
+      - tutorial-application
+  endpoints:
+    - path: /metrics
+      interval: 20s
+      scrapeTimeout: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: otel-prom-cr-collector-monitoring
+  namespace: observability-backend
+spec:
+  endpoints:
+    - path: /metrics
+      port: monitoring
+  namespaceSelector:
+    matchNames:
+      - observability-backend
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: otel-prom-cr-collector-monitoring
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: otel-prom-cr-targetallocator
+  namespace: observability-backend
+spec:
+  endpoints:
+    - path: /metrics
+      port: targetallocation
+  namespaceSelector:
+    matchNames:
+      - observability-backend
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: otel-prom-cr-targetallocator
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: opentelemetry-operator-controller-manager-metrics-service
+  namespace: opentelemetry-operator-system
+spec:
+  endpoints:
+    - path: /metrics
+      port: metrics
+  namespaceSelector:
+    matchNames:
+      - opentelemetry-operator-system
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: opentelemetry-operator
