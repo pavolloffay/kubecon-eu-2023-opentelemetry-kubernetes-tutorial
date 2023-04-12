@@ -168,10 +168,4 @@ spec:
 
 Then use annotation on a pod spec to enable the injection e.g. `instrumentation.opentelemetry.io/inject-java: "true"`
 
-### Create Instrumentation CR
-
-Now let's create an `Instrumentation` CR that defines configuration for OpenTelemetry auto-instrumentation agents.
-
-```bash
-kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/app/instrumentation.yaml
-```
+We will create the `Instrumentation` resource in the next tutorial step.
