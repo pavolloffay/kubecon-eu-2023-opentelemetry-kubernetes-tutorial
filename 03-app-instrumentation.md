@@ -18,22 +18,24 @@ For development you can run the app locally by installing all dependencies
 and running it with `nodemon` from the [./app/frontend](./app/frontend/) directory:
 
 ```bash
-$ cd app/frontend
-$ npm install
-$ npx nodemon index.js
-{"level":30,"time":...,"pid":...,"hostname":"...","msg":"Example app listening on port 4000"}
+cd app/frontend
+npm install
+npx nodemon index.js
 ```
 
 If you don't have Node.JS installed locally, you can use a container for development:
 
 ```bash
-$ cd app/frontend
-$ docker run --network=host --rm -t -i -v ${PWD}:/app node:18-alpine /bin/sh
-# Within the container
-$ cd /app
-$ npm install
-$ npx nodemon index.js
-{"level":30,"time":...,"pid":20,"hostname":"...","msg":"Example app listening on port 4000"}
+cd app/frontend
+docker run --network=host --rm -t -i -v ${PWD}:/app node:18-alpine /bin/sh
+```
+
+Within the container run
+
+```bash
+cd /app
+npm install
+npx nodemon index.js
 ```
 
 Open the [index.js](./app/frontend/index.js) file with your preferred editor.
@@ -59,12 +61,11 @@ into the [instrument.js](./app/frontend/instrument.js) file.
 To see if spans are emitted to the collector, call the frontend service via your
 browser or curl:
 
-```
-$ curl localhost:4000/
-Internal Server Error
+```bash
+curl localhost:4000/
 ```
 
-The **Internal Server Error** is OK for now, because you don't have the backends
+The **Internal Server Error** response is OK for now, because you don't have the backends
 running.
 
 If all works, your OpenTelemetry collector should receive metrics & traces and
@@ -142,6 +143,38 @@ kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-o
 Until now we only have created the Instrumentation resource, in a next step you
 need to opt-in your services for auto-instrumentation. This is done by updating
 your service's `spec.template.metadata.annotations`
+
+### Configure Node.JS - frontend service
+
+You have instrumented the frontend service manually in a previous step. In a real
+world scenario you would now rebuild your container image, upload it into the registry
+and make use of it in your deployment:
+
+```yaml
+    spec:
+      containers:
+      - name: frontend
+        image: ghcr.io/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial-frontend:latest
+        env:
+          - name: OTEL_INSTRUMENTATION_ENABLED
+            value: "true"
+```
+
+To provide you with a shortcut here, we have prepared a way for you to use a _manually_
+instrumented version of the frontend: The environment variable `OTEL_INSTRUMENTATION_ENABLED` set to true
+will make sure that the [./app/frontend/instrument.js] is included.
+
+All you need to do now, is to inject the configuration:
+
+```bash
+kubectl patch deployment frontend-deployment -n tutorial-application -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-sdk":"true"}}}} }'
+```
+
+Now verify that it worked:
+
+```bash
+kubectl get pods -n tutorial-application -l app=frontend -o yaml
+```
 
 ### Instrument Python - backend1 service
 
