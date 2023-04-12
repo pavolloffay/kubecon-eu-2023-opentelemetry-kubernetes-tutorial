@@ -78,7 +78,7 @@ Finally, look into the `index.js` file once again, there are a few additional
 Run the following command to deploy the sample application to your cluster:
 
 ```bash
-kubectl apply -f https://github.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/blob/main/app/k8s.yaml
+kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/app/k8s.yaml
 ```
 
 After a short while, verify that it has been deployed successfully:
@@ -223,7 +223,6 @@ Let's enable collection of Kubernetes UID attributes. Update the `Instrumentatio
 ```bash
 kubectl edit instrumentations.opentelemetry.io my-instrumentation -n tutorial-application 
 ```
-
 
 ```yaml
 spec:
