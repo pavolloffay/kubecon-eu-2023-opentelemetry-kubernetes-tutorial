@@ -118,7 +118,7 @@ auto-instrumentation for you.
 
 With the operator & collector running you can now let the Operator know,
 what pods to instrument and which auto-instrumentation to use for those pods.
-This is done via the Instrumentation CRD. A basic Instrumentation resource
+This is done via the `Instrumentation` CRD. A basic Instrumentation resource
 looks like the following:
 
 ```yaml
@@ -132,14 +132,14 @@ spec:
     endpoint: http://otel-collector.observability-backend.svc.cluster.local:4317
 ```
 
-To create an Instrumentation resource for our sample application run the following
+To create an `Instrumentation` resource for our sample application run the following
 command:
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/app/instrumentation.yaml
 ```
 
-Until now we only have created the Instrumentation resource, in a next step you
+Until now we only have created the `Instrumentation` resource, in a next step you
 need to opt-in your services for auto-instrumentation. This is done by updating
 your service's `spec.template.metadata.annotations`
 

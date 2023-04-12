@@ -42,7 +42,7 @@ kubectl get pods -w -n opentelemetry-operator-system
 
 ## OpenTelemetry collector CRD
 
-Example OpenTelemetry collector CR:
+Example `OpenTelemetryCollector` CR:
 
 ```yaml
 apiVersion: opentelemetry.io/v1alpha1
@@ -135,7 +135,7 @@ The webhook adds an init container that copies auto-instrumentation libraries in
 it configures runtime (e.g. in JVM via `JAVA_TOOL_OPTIONS`) to load the libraries.
 
 
-Example OpenTelemetry Instrumentation CR:
+Example OpenTelemetry `Instrumentation` CR:
 
 ```yaml
 apiVersion: opentelemetry.io/v1alpha1
@@ -170,7 +170,7 @@ Then use annotation on a pod spec to enable the injection e.g. `instrumentation.
 
 ### Create Instrumentation CR
 
-Now let's create an Instrumentation CR that defines configuration for OpenTelemetry auto-instrumentation agents.
+Now let's create an `Instrumentation` CR that defines configuration for OpenTelemetry auto-instrumentation agents.
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/app/instrumentation.yaml
