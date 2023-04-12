@@ -12,7 +12,6 @@ spec:
     allocationStrategy: "consistent-hashing"
     replicas: 1
     image: ghcr.io/open-telemetry/opentelemetry-operator/target-allocator:0.74.0
-    serviceAccount: otel-collector-targetallocator
     prometheusCR:
       enabled: true
   ports:
@@ -100,6 +99,10 @@ rules:
     resources:
       - ingresses
     verbs: ["get", "list", "watch"]
+  - apiGroups: ["discovery.k8s.io"]
+    resources:
+    - endpointslices
+    verbs: ["get", "list", "watch"]
   - nonResourceURLs: ["/metrics", "/metrics/cadvisor"]
     verbs: ["get"]
 ---
@@ -117,7 +120,7 @@ subjects:
     name: otel-prom-cr-collector
     namespace: observability-backend
   - kind: ServiceAccount
-    name: otel-collector-targetallocator
+    name: otel-prom-cr-targetallocator
     namespace: observability-backend
 ---
 apiVersion: monitoring.coreos.com/v1
