@@ -306,3 +306,7 @@ kubectl edit opentelemetrycollectors.opentelemetry.io otel -n observability-back
         traces:
           processors: [memory_limiter, attributes, batch]
 ```
+
+See [traces in Grafana](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22nativeSearch%22,%22search%22:%22player%3DPavol%22%7D,%7B%22refId%22:%22B%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22traceId%22%7D%5D,%22range%22:%7B%22from%22:%22now-3h%22,%22to%22:%22now%22%7D%7D&right=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22query%22:%2256683d3ac9a751ffd7abde903dccc247%22,%22queryType%22:%22traceId%22,%22refId%22:%22A%22%7D%5D,%22range%22:%7B%22from%22:%221681295096718%22,%22to%22:%221681309496718%22%7D%7D)
+
+![Traces in Grafana, player attribute](./images/grafana-traces-player-attribute.jpg)
