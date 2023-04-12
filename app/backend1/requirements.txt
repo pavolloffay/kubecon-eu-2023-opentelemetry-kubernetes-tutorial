@@ -9,3 +9,4 @@ opentelemetry-distro==0.38b0
 opentelemetry-instrumentation==0.38b0
 opentelemetry-sdk==1.17.0
 opentelemetry-semantic-conventions==0.38b0
+prometheus-client==0.16.0
