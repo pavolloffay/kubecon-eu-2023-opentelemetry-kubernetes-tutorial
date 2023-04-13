@@ -16,7 +16,7 @@ receiver, which scrapes metric endpoints provided in a scrape_config like the on
 ```
 
 The collector can be set up with the [Target Allocator](https://github.com/open-telemetry/opentelemetry-operator/blob/main/cmd/otel-allocator/README.md) 
-to use prometheus [service and pod monitors](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/getting-started.md).
+to use prometheus [service and pod monitors](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/design.md#servicemonitor).
 This allows the collector to discover metric endpoints dynamically, without listing them all in the scrape configuration.
 
 In order to apply a pod or service monitor, the CRDs need to be installed:
@@ -29,6 +29,7 @@ kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheu
 Then we can start a new collector as a StatefulSet with a Target Allocator:
 ```shell
 kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/backend/03-collector-prom-cr.yaml
+kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/backend/04-servicemonitors.yaml
 ```
 
 ## Span metrics
