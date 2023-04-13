@@ -52,21 +52,3 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: otel-prom-cr-targetallocator
----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: opentelemetry-operator-controller-manager-metrics-service
-  namespace: opentelemetry-operator-system
-spec:
-  endpoints:
-    - path: /metrics
-      port: metrics
-      interval: 20s
-      scrapeTimeout: 10s
-  namespaceSelector:
-    matchNames:
-      - opentelemetry-operator-system
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: opentelemetry-operator
