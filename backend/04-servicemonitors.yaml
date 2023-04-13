@@ -1,0 +1,54 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: backend1-service
+  namespace: tutorial-application
+spec:
+  selector:
+    matchLabels:
+      app: backend1
+  namespaceSelector:
+    matchNames:
+      - tutorial-application
+  endpoints:
+    - path: /metrics/
+      port: service
+      interval: 20s
+      scrapeTimeout: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: otel-prom-cr-collector-monitoring
+  namespace: observability-backend
+spec:
+  endpoints:
+    - path: /metrics
+      port: monitoring
+      interval: 20s
+      scrapeTimeout: 10s
+  namespaceSelector:
+    matchNames:
+      - observability-backend
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: otel-prom-cr-collector-monitoring
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: otel-prom-cr-targetallocator
+  namespace: observability-backend
+spec:
+  endpoints:
+    - path: /metrics
+      port: targetallocation
+      interval: 20s
+      scrapeTimeout: 10s
+  namespaceSelector:
+    matchNames:
+      - observability-backend
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: otel-prom-cr-targetallocator

@@ -33,10 +33,13 @@ kind: Service
 metadata:
   name: backend1-service
   namespace: tutorial-application
+  labels:
+    app: backend1
 spec:
   ports:
   - port: 5000
     targetPort: 5000
+    name: service
   selector:
     app: backend1
 ---
