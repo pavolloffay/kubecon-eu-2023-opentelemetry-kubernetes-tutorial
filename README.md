@@ -39,3 +39,5 @@ For visualisation port forward Grafana:
 ```bash
 kubectl port-forward -n observability-backend svc/grafana 3000:3000
 ```
+
+Open it in the browser [localhost:3000](ttp://localhost:3000/)
