@@ -30,7 +30,7 @@ cd app/frontend
 docker run --network=host --rm -t -i -v ${PWD}:/app node:18-alpine /bin/sh
 ```
 
-Within the container run
+Within the container run:
 
 ```bash
 cd /app
@@ -153,7 +153,7 @@ and make use of it in your deployment:
 
 To provide you with a shortcut here, we have prepared a way for you to use a _manually_
 instrumented version of the frontend: The environment variable `OTEL_INSTRUMENTATION_ENABLED` set to true
-will make sure that the [./app/frontend/instrument.js] is included.
+will make sure that the [instrument.js](./app/frontend/instrument.js) is included.
 
 All you need to do now, is to inject the configuration:
 
@@ -199,7 +199,7 @@ and [access traces](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22dat
 
 ### The full picture
 
-Wait for a little bit and then [access your traces once again](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22nativeSearch%22,%22serviceName%22:%22frontend-deployment%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D): you should see traces starting in the frontend and continuing across the backend services.
+Wait for a little bit and then [access your traces once again](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22nativeSearch%22,%22serviceName%22:%22frontend-deployment%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D). You should see traces starting in the frontend and continuing across the backend services.
 
 ![View of a trace shat shows spans in the frontend, backend1 and backend2](./images/grafana-complete-trace.png)
 
@@ -267,6 +267,7 @@ The resource attributes are injected to the application container, to apply the 
 ```bash
 kubectl rollout restart deployment -n tutorial-application -l app=backend1
 kubectl rollout restart deployment -n tutorial-application -l app=backend2
+kubectl rollout restart deployment -n tutorial-application -l app=frontend
 ```
 
 ![Traces in Grafana](./images/grafana-traces-resoure.jpg)
@@ -294,6 +295,7 @@ Restart of applications is required again, the OTEL environment variables are se
 ```bash
 kubectl rollout restart deployment -n tutorial-application -l app=backend1
 kubectl rollout restart deployment -n tutorial-application -l app=backend2
+kubectl rollout restart deployment -n tutorial-application -l app=frontend
 ```
 
 All possible values of `type` and `argument` are defined in [SDK configuration](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/sdk-environment-variables.md#general-sdk-configuration)
