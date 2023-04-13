@@ -235,6 +235,49 @@ and [access traces](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22dat
 
 ### The full picture
 
+# Overview
+
+How everything should look like after running through the previous steps:
+
+```mermaid
+
+flowchart LR
+    subgraph namespace: observability-backend
+        subgraph pod: collector
+            OC{OTel Collector}
+        end
+        subgraph pod: mimir
+            OC --metrics-->Mimir
+        end
+        subgraph pod: loki
+            OC --logs-->Loki
+        end
+        subgraph pod: tempo
+            OC --traces-->Tempo
+        end
+        subgraph pod: grafana
+            grafana-.->Mimir
+            grafana-.->Loki
+            grafana-.->Tempo
+        end
+    end
+    subgraph namespace: app
+        subgraph pod: loadgen
+            LG((loadgen))
+        end
+        subgraph pod: frontend
+            LG --http--> F((frontend)) --metrics,traces--> OC
+        end
+        subgraph pod: backend1
+            F --http--> B1((backend1)) --metrics,traces--> OC
+        end
+        subgraph pod: backend2
+            F --http--> B2((backend2)) --logs,metrics,traces--> OC
+        end
+    end
+```
+
+
 Wait for a little bit and then [access your traces once again](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22nativeSearch%22,%22serviceName%22:%22frontend-deployment%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D): you should see traces starting in the frontend and continuing across the backend services.
 
 ![View of a trace shat shows spans in the frontend, backend1 and backend2](./images/grafana-complete-trace.png)
