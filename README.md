@@ -9,20 +9,11 @@ __Slides__: https://docs.google.com/presentation/d/1oDpQo9KW_C5HznE0GR53P22HzP_S
 
 ---
 
-Welcome to the OpenTelemetry Kubernetes tutorial.
-
-Each tutorial step is located in a separate file:
-
-1. [OpenTelemetry Collector introduction](./01-collector-introduction.md)
-1. [OpenTelemetry Operator introduction](./02-operator-introduction.md)
-1. [Application instrumentation](./03-app-instrumentation.md)
-1. [Collecting metrics](./04-metrics.md)
-1. [Collecting logs](./05-logs.md)
-1. [Roadmap](./06-roadmap.md)
+## Welcome to the OpenTelemetry Kubernetes tutorial.
 
 ### Prerequisites
 
-This tutorial requires a docker and Kubernetes cluster, refer to [Kind](https://kind.sigs.k8s.io/docs/user/quick-start/) or [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster installations.
+Before you can get started, this tutorial requires you to have a docker and Kubernetes cluster, refer to [Kind](https://kind.sigs.k8s.io/docs/user/quick-start/) or [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster installations.
 
 #### Deploy observability backend
 
@@ -39,3 +30,16 @@ For visualisation port forward Grafana:
 ```bash
 kubectl port-forward -n observability-backend svc/grafana 3000:3000
 ```
+
+You can now access grafana at <http://localhost:3000/>.
+
+### Tutorial Steps
+
+Each tutorial step is located in a separate file:
+
+1. [OpenTelemetry Collector introduction](./01-collector-introduction.md)
+1. [OpenTelemetry Operator introduction](./02-operator-introduction.md)
+1. [Application instrumentation](./03-app-instrumentation.md)
+1. [Collecting metrics](./04-metrics.md)
+1. [Collecting logs](./05-logs.md)
+1. [Roadmap](./06-roadmap.md)
