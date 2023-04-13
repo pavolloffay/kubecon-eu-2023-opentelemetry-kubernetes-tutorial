@@ -103,6 +103,8 @@ Now let's port forward the frontend application:
 kubectl port-forward -n tutorial-application svc/frontend-service 4000:4000
 ```
 
+Open it in the browser [localhost:4000](ttp://localhost:4000/)
+
 ## Auto-instrumentation
 
 The OpenTelemetry Operator supports injecting and configuring
@@ -155,6 +157,8 @@ To provide you with a shortcut here, we have prepared a way for you to use a _ma
 instrumented version of the frontend: The environment variable `OTEL_INSTRUMENTATION_ENABLED` set to true
 will make sure that the [instrument.js](./app/frontend/instrument.js) is included.
 
+The `Node.js` auto-instrumentation supports traces and metrics.
+
 All you need to do now, is to inject the configuration:
 
 ```bash
@@ -171,6 +175,8 @@ and [access traces](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22dat
 
 ### Instrument Python - backend1 service
 
+The `Python` auto-instrumentation supports traces and metrics.
+
 ```bash
 kubectl patch deployment backend1-deployment -n tutorial-application -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-python":"true"}}}} }'
 ```
@@ -184,6 +190,8 @@ kubectl get pods -n tutorial-application -l app=backend1 -o yaml
 and [access traces](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22nativeSearch%22,%22serviceName%22:%22backend1-deployment%22,%22spanName%22:%22%2Frolldice%22%7D,%7B%22refId%22:%22B%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22traceId%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D).
 
 ### Instrument Java - backend2 service
+
+The `Java` auto-instrumentation supports traces, metrics and logs.
 
 ```bash
 kubectl patch deployment backend2-deployment -n tutorial-application -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-java":"true"}}}} }'
@@ -298,6 +306,8 @@ kubectl rollout restart deployment -n tutorial-application -l app=backend2
 kubectl rollout restart deployment -n tutorial-application -l app=frontend
 ```
 
+Now let's take a look at the Grafana dashboard of the collector for [received traces](http://localhost:3000/grafana/d/7hHiATL4z/collector?orgId=1&viewPanel=7).
+
 All possible values of `type` and `argument` are defined in [SDK configuration](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/sdk-environment-variables.md#general-sdk-configuration)
 
 ### Remotely configurable sampling
@@ -318,6 +328,7 @@ The following collector processors can be used for data manipulation:
 
 * [attributesprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/attributesprocessor) removes attributes. 
 * [filterprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/filterprocessor) removes spans and attributes. It supports regex.
+* [transformprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/transformprocessor) modifies telemetry based on configuration using the [OpenTelemetry Transformation Language](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/pkg/ottl).
 
 Now let's edit the collector configuration to extract player's name from `http.target` attribute:
 
