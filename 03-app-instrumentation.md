@@ -235,8 +235,6 @@ and [access traces](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22dat
 
 ### The full picture
 
-# Overview
-
 How everything should look like after running through the previous steps:
 
 ```mermaid
