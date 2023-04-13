@@ -45,15 +45,6 @@ to add tracing & metrics. A few differences in your implementation:
 
 - Instead of creating a dedicated `instrument.js` you can add the initialization of the SDK at the top of `index.js` directly.
 - Replace the `ConsoleSpanExporter` with an `OTLPTraceExporter` as outlined in the [Exporters](https://opentelemetry.io/docs/instrumentation/js/exporters/) documentation (make use of `opentelemetry/exporter-metrics-otlp-grpc` & `opentelemetry/exporter-trace-otlp-grpc`)
-- Add a `metricReader` to your SDK initialization:
-  
-  ```javascript
-      ...
-      metricReader: new PeriodicExportingMetricReader({
-        exporter: new OTLPMetricExporter(),
-      }),
-      ...
-  ```
 
 Give it a try yourself, if you are unsure how to accomplish this, you can peek
 into the [instrument.js](./app/frontend/instrument.js) file.
