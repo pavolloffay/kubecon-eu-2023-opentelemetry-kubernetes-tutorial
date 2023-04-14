@@ -1,6 +1,14 @@
 # OpenTelemetry Operator introduction (10 mins)
 
-This tutorial step focuses on the OpenTelemetry operator introduction.
+This tutorial step focuses on the [OpenTelemetry operator](https://github.com/open-telemetry/opentelemetry-operator) introduction.
+
+## What is Kubernetes operator
+
+Kubernetes operator can:
+* Create `CustomResouceDefinitions` (CRD) in the cluster
+* Hide deployment complexity of the application
+* Support application upgrades (handles breaking changes, schema migrations)
+* Auto scale the application
 
 ## What is OpenTelemetry operator
 
@@ -18,7 +26,7 @@ It manages two `CustomResourceDefinition`s (CRDs):
 The operator installation consists of the operator `Deployment`, `Service`, `ClusterRole`, `ClusterRoleBinding`, `CustomResourceDefinitions` etc.
 
 The operator can be deployed via:
-* [Apply operator Kubernetes manifest files](https://github.com/open-telemetry/opentelemetry-operator/releases/download/v0.74.0/opentelemetry-operator.yaml)
+* [Apply operator Kubernetes manifest files](https://github.com/open-telemetry/opentelemetry-operator/releases)
 * [OperatorHub for Kubernetes](https://operatorhub.io/operator/opentelemetry-operator)
 * OperatorHub on OpenShift
 
