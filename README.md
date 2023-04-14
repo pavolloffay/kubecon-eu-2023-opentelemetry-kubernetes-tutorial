@@ -41,3 +41,12 @@ kubectl port-forward -n observability-backend svc/grafana 3000:3000
 ```
 
 Open it in the browser [localhost:3000](ttp://localhost:3000/)
+
+
+#### Deploy cert-manager
+
+[cert-manager](https://cert-manager.io/docs/) is used by OpenTelemetry operator to provision TLS certificates for admission webhooks.
+
+```bash
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml
+```
