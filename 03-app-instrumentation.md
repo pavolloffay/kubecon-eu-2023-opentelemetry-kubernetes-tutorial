@@ -1,4 +1,4 @@
-# Deploy the application (Severin, Pavol, 30 mins)
+# Deploy the application
 
 This tutorial step focuses on instrumenting the services of the
 [sample application](./app).

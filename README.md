@@ -13,12 +13,12 @@ Welcome to the OpenTelemetry Kubernetes tutorial.
 
 Each tutorial step is located in a separate file:
 
-1. [OpenTelemetry Collector introduction](./01-collector-introduction.md)
-1. [OpenTelemetry Operator introduction](./02-operator-introduction.md)
-1. [Application instrumentation](./03-app-instrumentation.md)
-1. [Collecting metrics](./04-metrics.md)
-1. [Collecting logs](./05-logs.md)
-1. [Roadmap](./06-roadmap.md)
+1. [OpenTelemetry Collector introduction](./01-collector-introduction.md) (Bene, 10 min)
+1. [OpenTelemetry Operator introduction](./02-operator-introduction.md) (Pavol, 10 min)
+1. [Application instrumentation](./03-app-instrumentation.md) (Severin, Pavol, 30 min)
+1. [Collecting metrics](./04-metrics.md) (Kristina, 15 min)
+1. [Collecting logs](./05-logs.md) (Yuri, 10 min)
+1. [Roadmap](./06-roadmap.md) (Yuri, 5 min)
 
 ### Prerequisites
 

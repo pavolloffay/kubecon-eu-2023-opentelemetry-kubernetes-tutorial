@@ -1,4 +1,4 @@
-# Metrics (Kristina, 15 mins)
+# Metrics
 
 ## Summary
 
