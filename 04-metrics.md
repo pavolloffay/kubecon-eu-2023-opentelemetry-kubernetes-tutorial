@@ -7,9 +7,9 @@ to create metrics from spans.
 
 Our instrumentation we set up in the previous step provides metrics as well, which we can see in the
 [Apps Dashboard](http://localhost:3000/grafana/d/WbvDPqY4k/apps?orgId=1):
-![](/Users/kristina.pathak/go/src/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/images/grafana-metrics-frontend.png)
-![](/Users/kristina.pathak/go/src/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/images/grafana-metrics-backend1.png)
-![](/Users/kristina.pathak/go/src/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/images/grafana-metrics-backend2.png)
+![](./images/grafana-metrics-frontend.png)
+![](./images/grafana-metrics-backend1.png)
+![](./images/grafana-metrics-backend2.png)
 
 Our backend1 app has additional prometheus metrics that were previously instrumented.  We want to be able to see them 
 as well, which we can enable in the following steps.
@@ -81,14 +81,14 @@ tutorial-application    backend1-service                    21m
 ```
 
 Now, We're getting our backend1 prometheus metrics in the [Apps Dashboard](http://localhost:3000/grafana/d/WbvDPqY4k/apps?orgId=1):
-![](/Users/kristina.pathak/go/src/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/images/grafana-metrics-backend1-prometheus.png)
+![](./images/grafana-metrics-backend1-prometheus.png)
 
 We can see the bump in the prometheus metrics receiver and additional prometheus jobs in the [Collector Dashboard](http://localhost:3000/grafana/d/7hHiATL4z/collector?orgId=1):
-![](/Users/kristina.pathak/go/src/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/images/grafana-metrics-collector-addtl-scrapes.png)
+![](./images/grafana-metrics-collector-addtl-scrapes.png)
 
 And the Target Allocator has its own metrics in the [Target Allocator Dashboard](http://localhost:3000/grafana/d/ulLjw3L4z/target-allocator?orgId=1):
-![](/Users/kristina.pathak/go/src/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/images/grafana-metrics-ta.png)
-![](/Users/kristina.pathak/go/src/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/images/grafana-metrics-ta-server.png)
+![](./images/grafana-metrics-ta.png)
+![](./images/grafana-metrics-ta-server.png)
 
 ## Span metrics
 
@@ -121,7 +121,7 @@ kubectl rollout restart deployment otel-collector -n observability-backend
 ```
 
 Then we can see RED metrics at the bottom of the [Collector Dashboard](http://localhost:3000/grafana/d/7hHiATL4z/collector?orgId=1):
-![](/Users/kristina.pathak/go/src/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/images/grafana-metrics-collector-red.png)
+![](./images/grafana-metrics-collector-red.png)
 
 ---
 [Next Steps](./05-logs.md)
