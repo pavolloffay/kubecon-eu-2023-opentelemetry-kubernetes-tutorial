@@ -40,7 +40,7 @@ For visualisation port forward Grafana:
 kubectl port-forward -n observability-backend svc/grafana 3000:3000
 ```
 
-Open it in the browser [localhost:3000](ttp://localhost:3000/)
+Open it in the browser [localhost:3000](http://localhost:3000/)
 
 
 #### Deploy cert-manager

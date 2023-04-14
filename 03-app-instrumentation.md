@@ -103,7 +103,7 @@ Now let's port forward the frontend application:
 kubectl port-forward -n tutorial-application svc/frontend-service 4000:4000
 ```
 
-Open it in the browser [localhost:4000](ttp://localhost:4000/)
+Open it in the browser [localhost:4000](http://localhost:4000/)
 
 ## Auto-instrumentation
 
