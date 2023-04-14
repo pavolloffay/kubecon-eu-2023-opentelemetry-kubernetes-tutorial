@@ -23,7 +23,7 @@ npm install
 npx nodemon index.js
 ```
 
-If you don't have Node.JS installed locally, you can use a container for development:
+If you don't have `Node.JS` installed locally, you can use a container for development:
 
 ```bash
 cd app/frontend
@@ -217,7 +217,7 @@ There are several ways how essential Kubernetes resource attributes (`Namespace`
 
 * The `Instrumentation` CR - operator injects the attributes to the application container via `OTEL_RESOURCE_ATTRIBUTES` env var. The OpenTelemetry SDK used in the auto-instrumentation reads the variable.
 * The `OpenTelemetryCollector` CR - the [k8sattributesprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/k8sattributesprocessor) enriches spans with attributes in the collector
-* The `OpenTelemetryCollector` CR - in the sidecar mode use [resourcedetection](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/resourcedetectionprocessor). The operator sets `OTEL_RESOURCE_ATTRIBUTES` with Kubernetes resource attributes and the variable can be consumed by `env` detector see [the blog post](https://opentelemetry.io/blog/2022/k8s-metadata/#using-resource-detector-processor) for more details.
+* The `OpenTelemetryCollector` CR - in the `sidecar` mode use [resourcedetectionprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/resourcedetectionprocessor). The operator sets `OTEL_RESOURCE_ATTRIBUTES` with Kubernetes resource attributes and the variable can be consumed by `env` detector see [the blog post](https://opentelemetry.io/blog/2022/k8s-metadata/#using-resource-detector-processor) for more details.
 
 Kubernetes resource attributes like  are set 
 
@@ -291,7 +291,7 @@ Let's change the sampling rate (argument) to sample 25% of requests:
 kubectl edit instrumentations.opentelemetry.io my-instrumentation -n tutorial-application
 ```
 
-```bash
+```yaml
 spec:
   sampler:
     type: parentbased_traceidratio
