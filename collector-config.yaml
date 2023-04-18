@@ -1,25 +1,27 @@
+---
 receivers:
   otlp:
     protocols:
       grpc:
-      http:
-  jaeger:
-    protocols:
-      grpc:
-
+        endpoint: 127.0.0.1:4317
 processors:
+  batch:
 
 exporters:
   logging:
+    verbosity: normal
 
 service:
   pipelines:
-    traces:
-      receivers: [otlp]
-      exporters: [logging]
     metrics:
       receivers: [otlp]
+      processors: [batch]
       exporters: [logging]
     logs:
       receivers: [otlp]
+      processors: [batch]
+      exporters: [logging]
+    traces:
+      receivers: [otlp]
+      processors: [batch]
       exporters: [logging]
