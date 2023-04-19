@@ -1,4 +1,4 @@
-# Deploy the application
+# Deploy & instrument the application
 
 This tutorial step focuses on instrumenting the services of the
 [sample application](./app).
@@ -38,6 +38,24 @@ sequenceDiagram
     frontend-->>loadgen: alice rolls: 6
     frontend-->>loadgen: alice wins
 ```
+
+## Manual or Automatic Instrumentation?
+
+To make your application emit traces, metrics & logs you can either instrument
+your application _manually_ or _automatically_:
+
+- Manual instrumentation means that you modify your code yourself: you initialize and
+  configure the SDK, you load instrumentation libraries, you create your own spans,
+  metrics, etc.
+  Developers can use this approach to tune the observability of their application to
+  their needs.
+- Automatic instrumentation means that you don't have to touch your code to get your
+  application emit code.
+  Automatic instrumentation is great to get you started with OpenTelemetry, and it is
+  also valuable for Application Operators, who have no access or insights about the
+  source code.
+
+In the following we will introduce you to both approaches.
 
 ## Manual instrumentation
 
