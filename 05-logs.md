@@ -1,4 +1,4 @@
-# Logs (Yuri, 10 mins)
+# Logs
 
 ## FileLog receiver
 

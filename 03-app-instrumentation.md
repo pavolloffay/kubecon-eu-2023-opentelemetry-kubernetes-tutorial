@@ -1,4 +1,4 @@
-# Deploy the application (Severin, Pavol, 30 mins)
+# Deploy the application
 
 This tutorial step focuses on instrumenting the services of the
 [sample application](./app).
@@ -59,14 +59,14 @@ npm install
 npx nodemon index.js
 ```
 
-If you don't have Node.JS installed locally, you can use a container for development:
+If you don't have `Node.JS` installed locally, you can use a container for development:
 
 ```bash
 cd app/frontend
 docker run --network=host --rm -t -i -v ${PWD}:/app node:18-alpine /bin/sh
 ```
 
-Within the container run
+Within the container run:
 
 ```bash
 cd /app
@@ -139,6 +139,8 @@ Now let's port forward the frontend application:
 kubectl port-forward -n tutorial-application svc/frontend-service 4000:4000
 ```
 
+Open it in the browser [localhost:4000](http://localhost:4000/)
+
 ## Auto-instrumentation
 
 The OpenTelemetry Operator supports injecting and configuring
@@ -189,7 +191,9 @@ and make use of it in your deployment:
 
 To provide you with a shortcut here, we have prepared a way for you to use a _manually_
 instrumented version of the frontend: The environment variable `OTEL_INSTRUMENTATION_ENABLED` set to true
-will make sure that the [./app/frontend/instrument.js] is included.
+will make sure that the [instrument.js](./app/frontend/instrument.js) is included.
+
+The `Node.js` auto-instrumentation supports traces and metrics.
 
 All you need to do now, is to inject the configuration:
 
@@ -207,6 +211,8 @@ and [access traces](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22dat
 
 ### Instrument Python - backend1 service
 
+The `Python` auto-instrumentation supports traces and metrics.
+
 ```bash
 kubectl patch deployment backend1-deployment -n tutorial-application -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-python":"true"}}}} }'
 ```
@@ -220,6 +226,8 @@ kubectl get pods -n tutorial-application -l app=backend1 -o yaml
 and [access traces](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22nativeSearch%22,%22serviceName%22:%22backend1-deployment%22,%22spanName%22:%22%2Frolldice%22%7D,%7B%22refId%22:%22B%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22traceId%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D).
 
 ### Instrument Java - backend2 service
+
+The `Java` auto-instrumentation supports traces, metrics and logs.
 
 ```bash
 kubectl patch deployment backend2-deployment -n tutorial-application -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-java":"true"}}}} }'
@@ -275,8 +283,7 @@ flowchart LR
     end
 ```
 
-
-Wait for a little bit and then [access your traces once again](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22nativeSearch%22,%22serviceName%22:%22frontend-deployment%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D): you should see traces starting in the frontend and continuing across the backend services.
+Wait for a little bit and then [access your traces once again](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22nativeSearch%22,%22serviceName%22:%22frontend-deployment%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D). You should see traces starting in the frontend and continuing across the backend services.
 
 ![View of a trace shat shows spans in the frontend, backend1 and backend2](./images/grafana-complete-trace.png)
 
@@ -286,7 +293,7 @@ There are several ways how essential Kubernetes resource attributes (`Namespace`
 
 * The `Instrumentation` CR - operator injects the attributes to the application container via `OTEL_RESOURCE_ATTRIBUTES` env var. The OpenTelemetry SDK used in the auto-instrumentation reads the variable.
 * The `OpenTelemetryCollector` CR - the [k8sattributesprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/k8sattributesprocessor) enriches spans with attributes in the collector
-* The `OpenTelemetryCollector` CR - in the sidecar mode use [resourcedetection](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/resourcedetectionprocessor). The operator sets `OTEL_RESOURCE_ATTRIBUTES` with Kubernetes resource attributes and the variable can be consumed by `env` detector see [the blog post](https://opentelemetry.io/blog/2022/k8s-metadata/#using-resource-detector-processor) for more details.
+* The `OpenTelemetryCollector` CR - in the `sidecar` mode use [resourcedetectionprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/resourcedetectionprocessor). The operator sets `OTEL_RESOURCE_ATTRIBUTES` with Kubernetes resource attributes and the variable can be consumed by `env` detector see [the blog post](https://opentelemetry.io/blog/2022/k8s-metadata/#using-resource-detector-processor) for more details.
 
 Kubernetes resource attributes like  are set 
 
@@ -344,6 +351,7 @@ The resource attributes are injected to the application container, to apply the 
 ```bash
 kubectl rollout restart deployment -n tutorial-application -l app=backend1
 kubectl rollout restart deployment -n tutorial-application -l app=backend2
+kubectl rollout restart deployment -n tutorial-application -l app=frontend
 ```
 
 ![Traces in Grafana](./images/grafana-traces-resoure.jpg)
@@ -359,7 +367,7 @@ Let's change the sampling rate (argument) to sample 25% of requests:
 kubectl edit instrumentations.opentelemetry.io my-instrumentation -n tutorial-application
 ```
 
-```bash
+```yaml
 spec:
   sampler:
     type: parentbased_traceidratio
@@ -371,7 +379,10 @@ Restart of applications is required again, the OTEL environment variables are se
 ```bash
 kubectl rollout restart deployment -n tutorial-application -l app=backend1
 kubectl rollout restart deployment -n tutorial-application -l app=backend2
+kubectl rollout restart deployment -n tutorial-application -l app=frontend
 ```
+
+Now let's take a look at the Grafana dashboard of the collector for [received traces](http://localhost:3000/grafana/d/7hHiATL4z/collector?orgId=1&viewPanel=7).
 
 All possible values of `type` and `argument` are defined in [SDK configuration](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/sdk-environment-variables.md#general-sdk-configuration)
 
@@ -393,6 +404,8 @@ The following collector processors can be used for data manipulation:
 
 * [attributesprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/attributesprocessor) removes attributes. 
 * [filterprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/filterprocessor) removes spans and attributes. It supports regex.
+* [redactionprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/redactionprocessor) deletes span attributes that don't match a list of allowed span attributes.
+* [transformprocessor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/transformprocessor) modifies telemetry based on configuration using the [OpenTelemetry Transformation Language](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/pkg/ottl).
 
 Now let's edit the collector configuration to extract player's name from `http.target` attribute:
 

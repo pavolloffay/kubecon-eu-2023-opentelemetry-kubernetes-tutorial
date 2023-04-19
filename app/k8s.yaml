@@ -25,16 +25,20 @@ spec:
         image: ghcr.io/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial-backend1:latest 
         ports:
         - containerPort: 5000
+          name: service
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: backend1-service
   namespace: tutorial-application
+  labels:
+    app: backend1
 spec:
   ports:
   - port: 5000
     targetPort: 5000
+    name: service
   selector:
     app: backend1
 ---
