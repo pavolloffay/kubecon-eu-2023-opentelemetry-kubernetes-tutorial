@@ -177,3 +177,6 @@ spec:
 Then use annotation on a pod spec to enable the injection e.g. `instrumentation.opentelemetry.io/inject-java: "true"`
 
 We will create the `Instrumentation` resource in the next tutorial step.
+
+---
+[Next Steps](./03-app-instrumentation.md)
