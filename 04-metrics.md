@@ -80,7 +80,7 @@ observability-backend   otel-prom-cr-targetallocator        21m
 tutorial-application    backend1-service                    21m
 ```
 
-Now, We're getting our backend1 prometheus metrics in the [Apps Dashboard](http://localhost:3000/grafana/d/WbvDPqY4k/apps?orgId=1):
+Now we're getting our backend1 prometheus metrics in the [Apps Dashboard](http://localhost:3000/grafana/d/WbvDPqY4k/apps?orgId=1):
 ![](./images/grafana-metrics-backend1-prometheus.png)
 
 We can see the bump in the prometheus metrics receiver and additional prometheus jobs in the [Collector Dashboard](http://localhost:3000/grafana/d/7hHiATL4z/collector?orgId=1):
@@ -97,7 +97,7 @@ to transform spans into Request, Error, and Duration (RED) metrics.  A [connecto
 is a special component in the collector that can consume data as an exporter in one pipeline and emit data as a 
 receiver in another.
 
-Our otel collector from is the [Operator Introduction](./02-operator-introduction.md) is the collector receiving 
+Our otel collector from the [Operator Introduction](./02-operator-introduction.md) is the collector receiving 
 traces, so we want to modify its configuration to add the spanmetrics connector:
 ```shell
 kubectl edit opentelemetrycollectors.opentelemetry.io otel -n observability-backend 
@@ -120,7 +120,7 @@ Then the collector will need to be restarted:
 kubectl rollout restart deployment otel-collector -n observability-backend
 ```
 
-Then we can see RED metrics at the bottom of the [Collector Dashboard](http://localhost:3000/grafana/d/7hHiATL4z/collector?orgId=1):
+Now we can see RED metrics at the bottom of the [Collector Dashboard](http://localhost:3000/grafana/d/7hHiATL4z/collector?orgId=1):
 ![](./images/grafana-metrics-collector-red.png)
 
 ---
