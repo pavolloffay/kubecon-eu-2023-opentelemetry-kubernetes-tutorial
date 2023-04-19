@@ -12,7 +12,7 @@ Structure of the OpenTelemetry Collector.
 
 The OpenTelemetry Collector can be devided into a few major components.
 
-- **Receivers**: Collect data from a specific source, like an application or infrastructure, and convert it into OTLP. This component can be active (e.g. Prometheus) or passive (OTLP).
+- **Receivers**: Collect data from a specific source, like an application or infrastructure, and convert it into [pData (pipeline data)](https://pkg.go.dev/go.opentelemetry.io/collector/consumer/pdata#section-documentation). This component can be active (e.g. Prometheus) or passive (OTLP).
 - **Processors**: Manipulates the data collected by receivers in some way. For example, a processor might filter out irrelevant data, or add metadata to help with analysis. Like the batch or metric renaming processor.
 - **Exporters**: Send data to an external system for storage or analysis. Examples are Prometheus, Loki or the OTLP exporter.
 - **Extensions**: Add additional functionality to OpenTelemetry, like configuring a bearer token or offering a Jaeger remote sampling endpoint.
