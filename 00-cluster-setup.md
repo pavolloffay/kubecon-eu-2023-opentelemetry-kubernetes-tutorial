@@ -1,4 +1,4 @@
-# Prerequisites
+# Cluster setup
 
 This tutorial requires a docker and Kubernetes cluster, refer to [Kind](https://kind.sigs.k8s.io/docs/user/quick-start/) or [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster installations.
 
