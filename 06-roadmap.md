@@ -1,12 +1,13 @@
  # OpenTelemetry Operator Roadmap
 
-### Golang auto-instrumentation [#908](https://github.com/open-telemetry/opentelemetry-operator/issues/908)
+### Golang auto-instrumentation.
   - Adding OpenTelemetry instrumentation to Go applications without having to modify their source code.
 
-### OpAMP Bridge [#1368](https://github.com/open-telemetry/opentelemetry-operator/issues/1368)
+### OpAMP Bridge.
   - Open Agent Management Protocol (OpAMP) is a network protocol for remote management of large fleets of data collection Agents. The complete specification can be found [here](https://github.com/open-telemetry/opamp-spec/blob/main/specification.md). 
 
-### Opnionated CRDs [#1477](https://github.com/open-telemetry/opentelemetry-operator/issues/1477)
+### Simplifying the Operator CRDs. 
+ - 
 ````yaml
     apiVersion: opentelemetry.io/v1alpha1
     kind: OpenTelemetryCollectorDestination
