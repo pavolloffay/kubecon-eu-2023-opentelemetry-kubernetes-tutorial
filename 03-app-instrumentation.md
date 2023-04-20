@@ -81,7 +81,7 @@ If you don't have `Node.JS` installed locally, you can use a container for devel
 
 ```bash
 cd app/frontend
-docker run -p 4000:4000 --link otelcol --rm -t -i -v ${PWD}:/app node:18-alpine /bin/sh
+docker run -p 4000:4000 --link otel-colector --rm -t -i -v ${PWD}:/app node:18-alpine /bin/sh
 ```
 
 Within the container run:
