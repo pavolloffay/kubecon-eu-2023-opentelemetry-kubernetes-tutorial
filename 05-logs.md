@@ -143,9 +143,5 @@ spec:
           exporters: [logging, loki]
 
 ````
-
-
-TODO deploy daemonset collector that can scrape Kubernetes logs.
-
 ---
 [Next steps](./06-roadmap.md)
