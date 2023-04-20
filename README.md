@@ -52,6 +52,7 @@ Open it in the browser [localhost:3000](http://localhost:3000/)
 
 Each tutorial step is located in a separate file:
 
+1. [Prerequisites](./00-prerequisites.md)
 1. [OpenTelemetry Collector introduction](./01-collector-introduction.md) (Bene, 10 min)
 1. [OpenTelemetry Operator introduction](./02-operator-introduction.md) (Pavol, 10 min)
 1. [Application instrumentation](./03-app-instrumentation.md) (Severin, Pavol, 30 min)
