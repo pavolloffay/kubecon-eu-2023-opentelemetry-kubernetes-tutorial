@@ -58,6 +58,7 @@ kind: OpenTelemetryCollector
 metadata:
   name: otel
 spec:
+  image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.74.0
   mode: deployment # statefulset, daemonset, sidecar
   autoscaler:
     targetCPUUtilization: 90

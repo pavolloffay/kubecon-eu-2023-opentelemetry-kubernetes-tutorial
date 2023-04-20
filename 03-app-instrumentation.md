@@ -81,7 +81,7 @@ If you don't have `Node.JS` installed locally, you can use a container for devel
 
 ```bash
 cd app/frontend
-docker run --network=host --rm -t -i -v ${PWD}:/app node:18-alpine /bin/sh
+docker run -p 4000:4000 --link otel-colector --rm -t -i -v ${PWD}:/app node:18-alpine /bin/sh
 ```
 
 Within the container run:
@@ -180,7 +180,7 @@ spec:
     endpoint: http://otel-collector.observability-backend.svc.cluster.local:4317
 ```
 
-To create an `Instrumentation` resource for our sample application run the following
+To create an [Instrumentation resource](./app/instrumentation.yaml) for our sample application run the following
 command:
 
 ```bash
@@ -213,6 +213,11 @@ will make sure that the [instrument.js](./app/frontend/instrument.js) is include
 
 The `Node.js` auto-instrumentation supports traces and metrics.
 
+Before applying the annotation let's take a look at the pod specification:
+```bash
+kubectl get pods -n tutorial-application -l app=frontend -o yaml
+```
+
 All you need to do now, is to inject the configuration:
 
 ```bash
@@ -231,6 +236,13 @@ and [access traces](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22dat
 
 The `Python` auto-instrumentation supports traces and metrics.
 
+Before applying the annotation let's take a look at the pod specification:
+```bash
+kubectl get pods -n tutorial-application -l app=backend1 -o yaml
+```
+
+Let's enable in instrumentation by applying the annotation:
+
 ```bash
 kubectl patch deployment backend1-deployment -n tutorial-application -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-python":"true"}}}} }'
 ```
@@ -246,6 +258,13 @@ and [access traces](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22dat
 ### Instrument Java - backend2 service
 
 The `Java` auto-instrumentation supports traces, metrics and logs.
+
+Before applying the annotation let's take a look at the pod specification:
+```bash
+kubectl get pods -n tutorial-application -l app=backend2 -o yaml
+```
+
+Let's enable in instrumentation by applying the annotation:
 
 ```bash
 kubectl patch deployment backend2-deployment -n tutorial-application -p '{"spec": {"template":{"metadata":{"annotations":{"instrumentation.opentelemetry.io/inject-java":"true"}}}} }'
@@ -371,6 +390,8 @@ kubectl rollout restart deployment -n tutorial-application -l app=backend1
 kubectl rollout restart deployment -n tutorial-application -l app=backend2
 kubectl rollout restart deployment -n tutorial-application -l app=frontend
 ```
+
+[Traces in Grafana](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22nativeSearch%22,%22serviceName%22:%22frontend-deployment%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D).
 
 ![Traces in Grafana](./images/grafana-traces-resoure.jpg)
 
