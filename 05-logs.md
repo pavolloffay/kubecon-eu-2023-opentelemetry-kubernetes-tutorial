@@ -143,6 +143,3 @@ spec:
           exporters: [logging, loki]
 
 ````
-
-
-TODO deploy daemonset collector that can scrape Kubernetes logs.
