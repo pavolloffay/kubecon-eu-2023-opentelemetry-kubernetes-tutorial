@@ -17,7 +17,7 @@ This tutorial requires just requieres two major things:
 
 In case you do not have access to a K8S cluster, you can use  [Kind](https://kind.sigs.k8s.io/docs/user/quick-start/) or [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster installations.
 
-Here you will find our [quickstart guide](./00-prerequisites.md).
+Here you will find our [cluster setup](./00-cluster-setup.md).
 
 
 ### Initial Setup
@@ -52,7 +52,6 @@ Open it in the browser [localhost:3000](http://localhost:3000/)
 
 Each tutorial step is located in a separate file:
 
-1. [Prerequisites](./00-prerequisites.md)
 1. [OpenTelemetry Collector introduction](./01-collector-introduction.md) (Bene, 10 min)
 1. [OpenTelemetry Operator introduction](./02-operator-introduction.md) (Pavol, 10 min)
 1. [Application instrumentation](./03-app-instrumentation.md) (Severin, Pavol, 30 min)
