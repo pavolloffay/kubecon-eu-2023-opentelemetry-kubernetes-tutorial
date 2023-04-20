@@ -110,11 +110,11 @@ telemetrygen traces --otlp-insecure --duration 10s --rate 4
 
 If you do not have `telemetrygen` installed, alternatively you can use the container image instead:
 ```bash
-docker run ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.74.0 metrics --otlp-insecure --duration 10s --rate 4
+docker run --rm -it --link otel-collector ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.74.0 metrics --otlp-endpoint=otel-collector:4317 --otlp-insecure --duration 10s --rate 4
 # or
-docker run ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.74.0 logs --otlp-insecure --duration 10s --rate 4
+docker run --rm -it --link otel-collector ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.74.0 logs --otlp-endpoint=otel-collector:4317 --otlp-insecure --duration 10s --rate 4
 # or
-docker run ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.74.0 traces --otlp-insecure --duration 10s --rate 4
+docker run --rm -it --link otel-collector ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.74.0 traces --otlp-endpoint=otel-collector:4317 --otlp-insecure --duration 10s --rate 4
 ```
 
 Expected output:
