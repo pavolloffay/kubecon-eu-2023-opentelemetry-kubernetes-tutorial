@@ -1,17 +1,3 @@
-# Logs
-
-## Summary
-
-As far logs are concerned, one of the many challenges of SRE's is standardize the how the logs flow from diverse applications to different logging solutions, due to that, OpenTelemetry has the ability to receive and transmit logs through the OTEL protocol and create a correlation (e.g. through origin of the telemetry, execution context, time of execution) with metrics and traces.
-
-## FileLog receiver
-Filelog receiver is one of the various Receivers available on [OpenTelemetry Collector Contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib). It can read.
-
-## Otel Collector running as DaemonSet
-
-In order to demonstrate the logs instrumentation, we have to get the OpenTelemetry Instance running as a Daemonset:
-
-````yaml
 apiVersion: opentelemetry.io/v1alpha1
 kind: OpenTelemetryCollector
 metadata:
@@ -141,11 +127,3 @@ spec:
           receivers: [otlp, filelog]
           processors: [attributes,memory_limiter, batch ]
           exporters: [logging, loki]
-
-````
-
-
-TODO deploy daemonset collector that can scrape Kubernetes logs.
-
----
-[Next Steps](./06-roadmap.md)
