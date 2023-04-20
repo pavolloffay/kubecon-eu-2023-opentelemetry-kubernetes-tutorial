@@ -9,39 +9,18 @@ __Slides__: https://docs.google.com/presentation/d/1oDpQo9KW_C5HznE0GR53P22HzP_S
 
 ---
 
-Welcome to the OpenTelemetry Kubernetes tutorial.
-
-Each tutorial step is located in a separate file:
-
-1. [OpenTelemetry Collector introduction](./01-collector-introduction.md) (Bene, 10 min)
-1. [OpenTelemetry Operator introduction](./02-operator-introduction.md) (Pavol, 10 min)
-1. [Application instrumentation](./03-app-instrumentation.md) (Severin, Pavol, 30 min)
-1. [Collecting metrics](./04-metrics.md) (Kristina, 15 min)
-1. [Collecting logs](./05-logs.md) (Yuri, 10 min)
-1. [Roadmap](./06-roadmap.md) (Yuri, 5 min)
-
 ### Prerequisites
 
-This tutorial requires a docker and Kubernetes cluster, refer to [Kind](https://kind.sigs.k8s.io/docs/user/quick-start/) or [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster installations.
+This tutorial requires just requieres two major things:
+1. A tool like docker or podman to run OCI Container Images
+1. Access to a Kubernetes cluster within the version 1.19-1.26
 
-#### Deploy observability backend
+In case you do not have access to a K8S cluster, you can use  [Kind](https://kind.sigs.k8s.io/docs/user/quick-start/) or [Minikube](https://minikube.sigs.k8s.io/docs/start/) for a local Kubernetes cluster installations.
 
-This tutorial uses Grafana Mimir, Loki and Tempo as observability backend to store metrics, logs and traces.
+Here you will find our [quickstart guide](./00-prerequisites.md).
 
-Deploy the backend systems:
 
-```bash
-kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/backend/01-backend.yaml
-```
-
-For visualisation port forward Grafana:
-
-```bash
-kubectl port-forward -n observability-backend svc/grafana 3000:3000
-```
-
-Open it in the browser [localhost:3000](http://localhost:3000/)
-
+### Initial Setup
 
 #### Deploy cert-manager
 
@@ -50,3 +29,33 @@ Open it in the browser [localhost:3000](http://localhost:3000/)
 ```bash
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.11.0/cert-manager.yaml
 ```
+
+#### Deploy observability backend
+
+This course is all about Observabilty, so a backend is needed. If you don't have one, you can install a Prometheus compatible database Grafana [Mimir](https://github.com/grafana/mimir) as well as [Loki](https://github.com/grafana/loki) for logs and [Tempo](https://github.com/grafana/mimir) for traces as follows:
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/backend/01-backend.yaml
+```
+
+Afterwards, the backend can be found in the namespace x. A grafana dashboard with preconfigured datasources and dashboard is available for visualisation and can be made accessible with port-fowarding.
+
+```bash
+kubectl port-forward -n observability-backend svc/grafana 3000:3000
+```
+
+Open it in the browser [localhost:3000](http://localhost:3000/)
+
+---
+
+### Welcome to the OpenTelemetry Kubernetes tutorial.
+
+Each tutorial step is located in a separate file:
+
+1. [Prerequisites](./00-prerequisites.md)
+1. [OpenTelemetry Collector introduction](./01-collector-introduction.md) (Bene, 10 min)
+1. [OpenTelemetry Operator introduction](./02-operator-introduction.md) (Pavol, 10 min)
+1. [Application instrumentation](./03-app-instrumentation.md) (Severin, Pavol, 30 min)
+1. [Collecting metrics](./04-metrics.md) (Kristina, 15 min)
+1. [Collecting logs](./05-logs.md) (Yuri, 10 min)
+1. [Roadmap](./06-roadmap.md) (Yuri, 5 min)

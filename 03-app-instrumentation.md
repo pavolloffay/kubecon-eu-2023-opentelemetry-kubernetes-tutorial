@@ -1,7 +1,61 @@
-# Deploy the application
+# Deploy & instrument the application
 
 This tutorial step focuses on instrumenting the services of the
 [sample application](./app).
+
+## Application Description
+
+The sample application is a simple _"dice game"_, where two players roll a
+dice, and the player with the highest number wins.
+
+There are 3 microservices within this application:
+
+- Service `frontend` in Node.JS, that has an API endpoint `/` which takes two
+  player names as query parameters (player1 and player2). The service calls 2
+  down stream services (backend1, backend2), which each returning a random number
+  between 1-6. The winner is computed and returned.
+- Service `backend1` in python, that has an API endpoint `/rolldice` which takes
+  a player name as query parameter. The service returns a random number between
+  1 and 6.
+- Service `backend2` in Java, that also has an API endpoint `/rolldice` which
+  takes a player name as query parameter. The service returns a random number
+  between 1 and 6.
+
+Additionally there is a `lodagen` service, which utilizes `curl` to periodically
+ call the frontend service.
+
+ Let's assume player `alice` and `bob` use our service, here's a potential
+ sequence diagram:
+
+```mermaid
+sequenceDiagram
+    loadgen->>frontend: /?player1=bob&player2=alice
+    frontend->>backend1: /rolldice?player=bob
+    frontend->>backend2: /rolldice?player=alice
+    backend1-->>frontend: 3
+    frontend-->>loadgen: bob rolls: 3
+    backend2-->>frontend: 6
+    frontend-->>loadgen: alice rolls: 6
+    frontend-->>loadgen: alice wins
+```
+
+## Manual or Automatic Instrumentation?
+
+To make your application emit traces, metrics & logs you can either instrument
+your application _manually_ or _automatically_:
+
+- Manual instrumentation means that you modify your code yourself: you initialize and
+  configure the SDK, you load instrumentation libraries, you create your own spans,
+  metrics, etc.
+  Developers can use this approach to tune the observability of their application to
+  their needs.
+- Automatic instrumentation means that you don't have to touch your code to get your
+  application emit code.
+  Automatic instrumentation is great to get you started with OpenTelemetry, and it is
+  also valuable for Application Operators, who have no access or insights about the
+  source code.
+
+In the following we will introduce you to both approaches.
 
 ## Manual instrumentation
 
@@ -207,6 +261,46 @@ and [access traces](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22dat
 
 ### The full picture
 
+How everything should look like after running through the previous steps:
+
+```mermaid
+
+flowchart LR
+    subgraph namespace: observability-backend
+        subgraph pod: collector
+            OC{OTel Collector}
+        end
+        subgraph pod: mimir
+            OC --metrics-->Mimir
+        end
+        subgraph pod: loki
+            OC --logs-->Loki
+        end
+        subgraph pod: tempo
+            OC --traces-->Tempo
+        end
+        subgraph pod: grafana
+            grafana-.->Mimir
+            grafana-.->Loki
+            grafana-.->Tempo
+        end
+    end
+    subgraph namespace: app
+        subgraph pod: loadgen
+            LG((loadgen))
+        end
+        subgraph pod: frontend
+            LG --http--> F((frontend)) --metrics,traces--> OC
+        end
+        subgraph pod: backend1
+            F --http--> B1((backend1)) --metrics,traces--> OC
+        end
+        subgraph pod: backend2
+            F --http--> B2((backend2)) --logs,metrics,traces--> OC
+        end
+    end
+```
+
 Wait for a little bit and then [access your traces once again](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22nativeSearch%22,%22serviceName%22:%22frontend-deployment%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D). You should see traces starting in the frontend and continuing across the backend services.
 
 ![View of a trace shat shows spans in the frontend, backend1 and backend2](./images/grafana-complete-trace.png)
@@ -354,3 +448,6 @@ kubectl edit opentelemetrycollectors.opentelemetry.io otel -n observability-back
 See [traces in Grafana](http://localhost:3000/grafana/explore?orgId=1&left=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22nativeSearch%22,%22search%22:%22player%3DPavol%22%7D,%7B%22refId%22:%22B%22,%22datasource%22:%7B%22type%22:%22tempo%22,%22uid%22:%22tempo%22%7D,%22queryType%22:%22traceId%22%7D%5D,%22range%22:%7B%22from%22:%22now-3h%22,%22to%22:%22now%22%7D%7D&right=%7B%22datasource%22:%22tempo%22,%22queries%22:%5B%7B%22query%22:%2256683d3ac9a751ffd7abde903dccc247%22,%22queryType%22:%22traceId%22,%22refId%22:%22A%22%7D%5D,%22range%22:%7B%22from%22:%221681295096718%22,%22to%22:%221681309496718%22%7D%7D)
 
 ![Traces in Grafana, player attribute](./images/grafana-traces-player-attribute.jpg)
+
+---
+[Next Steps](./04-metrics.md)

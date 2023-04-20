@@ -143,3 +143,5 @@ spec:
           exporters: [logging, loki]
 
 ````
+---
+[Next steps](./06-roadmap.md)

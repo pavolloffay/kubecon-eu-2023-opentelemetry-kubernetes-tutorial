@@ -89,6 +89,8 @@ The sidecar can be injected to a pod by applying `sidecar.opentelemetry.io/injec
 
 ### Deploy collector
 
+See the [collector CR](./backend/02-collector.yaml), and deploy it:
+
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/backend/02-collector.yaml
 ```
@@ -103,6 +105,16 @@ The collector is by default configured to export data to the observability backe
 The data to the collector can be pushed via `otel-collector` service in the `observability-backend` namespace. The full endpoint is `otel-collector.observability-backend.svc.cluster.local:4317`. The collector is by default configured to receive OpenTelemetry protocol (OTLP).
 
 ### Change collector configuration
+
+In this step we will change the collector config by adding the Jaeger receiver.
+
+Let's get the currently created services and see what ports are exposed:
+
+```bash
+kubectl get svc otel-collector -n observability-backend -o yaml
+```
+
+Edit the CR:
 
 ```bash
 kubectl edit opentelemetrycollectors.opentelemetry.io otel -n observability-backend 
@@ -177,3 +189,6 @@ spec:
 Then use annotation on a pod spec to enable the injection e.g. `instrumentation.opentelemetry.io/inject-java: "true"`
 
 We will create the `Instrumentation` resource in the next tutorial step.
+
+---
+[Next steps](./03-app-instrumentation.md)
