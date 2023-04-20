@@ -124,4 +124,4 @@ Now we can see RED metrics at the bottom of the [Collector Dashboard](http://loc
 ![](./images/grafana-metrics-collector-red.png)
 
 ---
-[Next Steps](./05-logs.md)
+[Next steps](./05-logs.md)

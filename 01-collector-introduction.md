@@ -120,7 +120,4 @@ Expected output:
 ```
 
 ---
-
-### Run your OpenTelemetry Collector on Kubernetes
-
-Learn more: [OpenTelemetry Operator introduction](./02-operator-introduction.md)
+[Next steps](./02-operator-introduction.md)

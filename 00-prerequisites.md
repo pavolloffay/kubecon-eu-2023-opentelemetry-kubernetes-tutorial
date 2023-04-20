@@ -43,3 +43,6 @@ workshop-control-plane   Ready    control-plane   75s   v1.26.3
 ```bash
 kind delete cluster --name=workshop
 ```
+
+---
+[Next steps](./01-collector-introduction.md)

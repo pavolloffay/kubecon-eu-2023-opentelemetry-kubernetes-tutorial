@@ -179,4 +179,4 @@ Then use annotation on a pod spec to enable the injection e.g. `instrumentation.
 We will create the `Instrumentation` resource in the next tutorial step.
 
 ---
-[Next Steps](./03-app-instrumentation.md)
+[Next steps](./03-app-instrumentation.md)
