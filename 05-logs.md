@@ -33,7 +33,7 @@ In order to demonstrate the logs instrumentation, we have to get the OpenTelemet
 
 ## OpenTelemetry Collector running as DaemonSet
 
-As soon as you apply the following manifest, you will create an instance will receive the logs from the tutorial-appplication:
+As soon as you apply the following manifest, you will create an instance will receive the logs from the tutorial-application:
 
 ```shell
 kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/backend/05-collector-daemonset.yaml
