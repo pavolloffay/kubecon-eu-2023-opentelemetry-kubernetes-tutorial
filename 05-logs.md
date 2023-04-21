@@ -55,16 +55,6 @@ otel-daemonset-collector-jgmw9    1/1     Running   0          10s
 tempo-779c47bc56-ndws2            1/1     Running   0          32m
 ````
 
-At this step we are creating a new instance pointing to the collector running as daemonset.
-```shell
-kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/app/instrumentation-logs.yaml
-```
-
-You should be able to see a new instance running through the command `kubectl get otelinst -n tutorial-application`:
-````shell
-NAME                   AGE     ENDPOINT                                                                       SAMPLER                    SAMPLER ARG
-instrumentation-logs   8m33s   http://otel-daemonset-collector.observability-backend.svc.cluster.local:4317   parentbased_traceidratio   1
-````
 Wait for a little bit and then [access your logs once again](http://localhost:3000/grafana/d/WfV_7jY4k/loki-dashboard?orgId=1). You should see logs starting in the frontend and continuing across the backend services.
 
 ![View of logs flowing from collector to loki](./images/logs-dashboard.png)
