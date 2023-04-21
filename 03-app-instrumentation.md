@@ -21,7 +21,7 @@ There are 3 microservices within this application:
   takes a player name as query parameter. The service returns a random number
   between 1 and 6.
 
-Additionally there is a `lodagen` service, which utilizes `curl` to periodically
+Additionally there is a `loadgen` service, which utilizes `curl` to periodically
  call the frontend service.
 
  Let's assume player `alice` and `bob` use our service, here's a potential
