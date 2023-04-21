@@ -65,6 +65,9 @@ You should be able to see a new instance running through the command `kubectl ge
 NAME                   AGE     ENDPOINT                                                                       SAMPLER                    SAMPLER ARG
 instrumentation-logs   8m33s   http://otel-daemonset-collector.observability-backend.svc.cluster.local:4317   parentbased_traceidratio   1
 ````
+Wait for a little bit and then [access your traces once again](http://localhost:3000/grafana/d/WfV_7jY4k/loki-dashboard?orgId=1). You should see traces starting in the frontend and continuing across the backend services.
+
+![View of logs flowing from collector to loki](./images/logs-dashboard.png)
 
 ---
 [Next steps](./06-roadmap.md)

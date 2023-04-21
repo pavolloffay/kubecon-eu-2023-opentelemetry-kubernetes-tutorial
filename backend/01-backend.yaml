@@ -4864,7 +4864,7 @@ data:
       {
         "datasource": {
           "type": "loki",
-          "uid": "EG4mRXY4k"
+          "uid": "PEA2100DC89AE9FE2"
         },
         "gridPos": {
           "h": 9,
@@ -4887,11 +4887,11 @@ data:
         "targets": [
           {
             "datasource": {
-              "type": "loki",
-              "uid": "EG4mRXY4k"
+            "type": "loki",
+            "uid": "PEA2100DC89AE9FE2"
             },
-            "editorMode": "code",
-            "expr": "{app=~\"backend1|backend2|frontend\"}",
+            "editorMode": "builder",
+            "expr": "{exporter=\"OTLP\"} |= ``",
             "queryType": "range",
             "refId": "A"
           }
