@@ -49,7 +49,7 @@ kind delete cluster --name=workshop
 To send telemetry to the OpenTelemetry Collector (that will be created in step 1), there is a `telemetrygen` helper tool [in the contrib repository avaliable](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/v0.75.0/cmd/telemetrygen). If go is not installed, the container image can be used.
 
 ```bash
-go install github.com/open-telemetry/opentelemetry-collector-contrib/cmd/telemetrygen@v0.75.0
+go install github.com/open-telemetry/opentelemetry-collector-contrib/cmd/telemetrygen@v0.74.0
 ```
 
 ---
