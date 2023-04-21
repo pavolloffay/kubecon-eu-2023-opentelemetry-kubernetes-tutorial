@@ -4830,7 +4830,7 @@ data:
       "version": 4,
       "weekStart": ""
     }
-    logs-otel.json: |
+  logs-otel.json: |
     {
     "annotations": {
       "list": [
