@@ -25,10 +25,6 @@ spec:
   image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.74.0
   config: |
     receivers:
-      otlp:
-        protocols:
-          grpc:
-          http:
       prometheus:
         config:
           scrape_configs:
@@ -132,15 +128,7 @@ spec:
 
     service: 
       pipelines:
-        traces:
-          receivers: [otlp]
-          processors: [memory_limiter, batch]
-          exporters: [logging]
-        metrics:
-          receivers: [otlp]
-          processors: [memory_limiter, batch]
-          exporters: [logging]
         logs:
-          receivers: [otlp, filelog]
+          receivers: [filelog]
           processors: [attributes,memory_limiter, batch ]
           exporters: [logging, loki]
