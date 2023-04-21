@@ -84,16 +84,11 @@ service:
       exporters: [logging]
 ```
 
-Get the config to start playing:
-```bash
-curl -LJO https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/collector-config.yaml > collector-config.yaml
-```
-
 ### Run collector locally
 
-Here we launch a collector, which is accessible via localhost, with the previously downloaded `collector-config.yaml` description:
+Here we launch a collector, which is accessible via localhost, with the configuration shown above:
 ```bash
-docker run --rm -it --name otel-collector -p 4317:4317 -p 4318:4318 -v ${PWD}/collector-config.yaml:/tmp/collector-config.yaml:z ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector:0.74.0 --config /tmp/collector-config.yaml
+docker run --rm -it --name otel-collector -p 4317:4317 -p 4318:4318 ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector:0.74.0 --config https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/collector-config.yaml
 ```
 
 ### Send telemetry data to your Collector
