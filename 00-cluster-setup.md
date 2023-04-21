@@ -53,4 +53,4 @@ go install github.com/open-telemetry/opentelemetry-collector-contrib/cmd/telemet
 ```
 
 ---
-[Next steps](./01-collector-introduction.md)
+[Next steps](./README.md#initial-setup)
