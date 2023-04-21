@@ -53,7 +53,33 @@ can use the prometheus service and pod monitor to discover targets. The target a
 distributes both discovered and configured targets among available collectors. It must be deployed alongside a 
 Statefulset of collectors.
 
-Applying this chart will start a new collector as a StatefulSet with the target allocator enabled:
+Notable changes in the CRD compared to the collector Deployment we applied earlier:
+```yaml
+spec:
+  mode: statefulset
+  replicas: 3
+  targetAllocator:
+    enabled: true
+    allocationStrategy: "consistent-hashing"
+    replicas: 2
+    image: ghcr.io/open-telemetry/opentelemetry-operator/target-allocator:0.74.0
+    prometheusCR:
+      enabled: true
+
+  config: |
+    receivers:
+      prometheus:
+        config:
+          scrape_configs:
+        target_allocator:
+          endpoint: http://otel-prom-cr-targetallocator:80
+          interval: 30s
+          collector_id: ${POD_NAME}
+          http_sd_config:
+            refresh_interval: 60s
+```
+
+Applying this chart will start a new collector as a StatefulSet with the target allocator enabled, and it will create a ClusterRole granting the TargetAllocator the permissions it needs:
 ```shell
 kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/backend/03-collector-prom-cr.yaml
 ```

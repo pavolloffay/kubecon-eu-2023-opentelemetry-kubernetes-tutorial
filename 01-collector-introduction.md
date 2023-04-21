@@ -24,36 +24,36 @@ For more details, check the [offical documentation](https://opentelemetry.io/doc
 
 A set of receivers, processors, exporters, extensions and connectors is a distribution. Officially, there are two distributions provided with the names `core` and `contrib`. New releases are currently published every two weeks. After a release, the default collector distributions are available as binary, container image and linux distro packages.
 
-- **core**: Components are developed and maintained by the OpenTelemetry core team. [[manifest-v0.75.0](https://github.com/open-telemetry/opentelemetry-collector-releases/blob/v0.75.0/distributions/otelcol/manifest.yaml)]
-- **contrib**: Extends the core distribution with a large list of components developed by the OpenTelemetry Community components. [[manifest-v0.75.0](https://github.com/open-telemetry/opentelemetry-collector-releases/blob/v0.75.0/distributions/otelcol-contrib/manifest.yaml)]
+- **core**: Components are developed and maintained by the OpenTelemetry core team. [[manifest-v0.74.0](https://github.com/open-telemetry/opentelemetry-collector-releases/blob/v0.74.0/distributions/otelcol/manifest.yaml)]
+- **contrib**: Extends the core distribution with a large list of components developed by the OpenTelemetry Community components. [[manifest-v0.74.0](https://github.com/open-telemetry/opentelemetry-collector-releases/blob/v0.74.0/distributions/otelcol-contrib/manifest.yaml)]
 
 ### OpenTelemetry Collector Builder (OCB)
 
-With each new release of the OpenTelemetry Collector distributions, a new version of the [OpenTelemetry Collector Builder](https://github.com/open-telemetry/opentelemetry-collector/blob/v0.75.0/cmd/builder) is released too.
+With each new release of the OpenTelemetry Collector distributions, a new version of the [OpenTelemetry Collector Builder](https://github.com/open-telemetry/opentelemetry-collector/blob/v0.74.0/cmd/builder) is released too.
 
 ```yaml
 receivers:
-  - gomod: go.opentelemetry.io/collector/receiver/otlpreceiver v0.75.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver v0.75.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kafkareceiver v0.75.0
+  - gomod: go.opentelemetry.io/collector/receiver/otlpreceiver v0.74.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver v0.74.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kafkareceiver v0.74.0
 processors:
-  - gomod: go.opentelemetry.io/collector/processor/batchprocessor v0.75.0
+  - gomod: go.opentelemetry.io/collector/processor/batchprocessor v0.74.0
 exporters:
-  - gomod: go.opentelemetry.io/collector/exporter/otlpexporter v0.75.0
-  - gomod: go.opentelemetry.io/collector/exporter/otlphttpexporter v0.75.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/kafkaexporter v0.75.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/prometheusremotewriteexporter v0.75.0
+  - gomod: go.opentelemetry.io/collector/exporter/otlpexporter v0.74.0
+  - gomod: go.opentelemetry.io/collector/exporter/otlphttpexporter v0.74.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/kafkaexporter v0.74.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/prometheusremotewriteexporter v0.74.0
 extensions:
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/oidcauthextension v0.75.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/oidcauthextension v0.74.0
 connectors:
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/connector/spanmetricsconnector v0.75.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/connector/spanmetricsconnector v0.74.0
 ```
 
 ### Configuration
 
 The configuration of the Open Telemetry Collector is described in yaml. The following shows an `OTLP/gRPC` receiver listening on `localhost:4317`. A batch processor with default parameters and a logging exporter with a normal log level. It also describes multiple pipelines for different telemetry data, which all route their collected telemetry data to the logging exporter.
 
-The easiest way to learn more about the configuration options of individual components is to visit the readme in the component folder directly. Example [loggingexporter](https://github.com/open-telemetry/opentelemetry-collector/blob/v0.75.0/exporter/loggingexporter).
+The easiest way to learn more about the configuration options of individual components is to visit the readme in the component folder directly. Example [loggingexporter](https://github.com/open-telemetry/opentelemetry-collector/blob/v0.74.0/exporter/loggingexporter).
 
 ```yaml
 receivers:
@@ -110,11 +110,11 @@ telemetrygen traces --otlp-insecure --duration 10s --rate 4
 
 If you do not have `telemetrygen` installed, alternatively you can use the container image instead:
 ```bash
-docker run ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.74.0 metrics --otlp-insecure --duration 10s --rate 4
+docker run --rm -it --link otel-collector ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.74.0 metrics --otlp-endpoint=otel-collector:4317 --otlp-insecure --duration 10s --rate 4
 # or
-docker run ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.74.0 logs --otlp-insecure --duration 10s --rate 4
+docker run --rm -it --link otel-collector ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.74.0 logs --otlp-endpoint=otel-collector:4317 --otlp-insecure --duration 10s --rate 4
 # or
-docker run ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.74.0 traces --otlp-insecure --duration 10s --rate 4
+docker run --rm -it --link otel-collector ghcr.io/open-telemetry/opentelemetry-collector-contrib/telemetrygen:v0.74.0 traces --otlp-endpoint=otel-collector:4317 --otlp-insecure --duration 10s --rate 4
 ```
 
 Expected output:
