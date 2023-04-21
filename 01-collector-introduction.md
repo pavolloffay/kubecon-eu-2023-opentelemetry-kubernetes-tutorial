@@ -84,11 +84,6 @@ service:
       exporters: [logging]
 ```
 
-Get the config to start playing:
-```bash
-curl -LJO https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/collector-config.yaml > collector-config.yaml
-```
-
 ### Run collector locally
 
 Here we launch a collector, which is accessible via localhost, with the previously downloaded `collector-config.yaml` description:
