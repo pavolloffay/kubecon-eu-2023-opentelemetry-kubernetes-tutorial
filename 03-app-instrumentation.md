@@ -21,7 +21,7 @@ There are 3 microservices within this application:
   takes a player name as query parameter. The service returns a random number
   between 1 and 6.
 
-Additionally there is a `lodagen` service, which utilizes `curl` to periodically
+Additionally there is a `loadgen` service, which utilizes `curl` to periodically
  call the frontend service.
 
  Let's assume player `alice` and `bob` use our service, here's a potential
@@ -81,7 +81,7 @@ If you don't have `Node.JS` installed locally, you can use a container for devel
 
 ```bash
 cd app/frontend
-docker run -p 4000:4000 --link otel-colector --rm -t -i -v ${PWD}:/app:z node:18-alpine /bin/sh
+docker run -p 4000:4000 --link otel-collector --rm -t -i -v ${PWD}:/app:z node:18-alpine /bin/sh
 ```
 
 Within the container run:
