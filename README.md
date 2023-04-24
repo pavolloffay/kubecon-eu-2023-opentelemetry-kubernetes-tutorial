@@ -5,7 +5,7 @@ Deploying an end-to-end observability system comes with many challenges. The org
 
 __Schedule__: https://kccnceu2023.sched.com/event/1HyZ3/
 
-__Slides__: https://docs.google.com/presentation/d/1oDpQo9KW_C5HznE0GR53P22HzP_SN2Ml/edit#slide=id.g227fe4440bd_0_0
+__Slides__: https://docs.google.com/presentation/d/1oDpQo9KW_C5HznE0GR53P22HzP_SN2Ml/edit#slide=id.g227fe4440bd_0_0 or [slides.pdf](./slides.pdf)
 
 ---
 
