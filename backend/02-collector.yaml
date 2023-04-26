@@ -39,6 +39,12 @@ spec:
       logging:
     
     service:
+      # Expose internal telemetry of the collector
+      # It exposes Prometheus /metrics endpoint, that is scraped by the prometheus receiver
+      # and the metrics are sent through the pipeline to the metrics backend.
+      telemetry:
+        metrics:
+          address: localhost:8888
       pipelines:
         traces:
           receivers: [otlp]
