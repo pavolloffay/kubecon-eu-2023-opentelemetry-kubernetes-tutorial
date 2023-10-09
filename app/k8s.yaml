@@ -36,9 +36,9 @@ metadata:
     app: backend1
 spec:
   ports:
-  - port: 5000
+  - name: http
+    port: 5000
     targetPort: 5000
-    name: service
   selector:
     app: backend1
 ---
@@ -72,7 +72,8 @@ metadata:
   namespace: tutorial-application
 spec:
   ports:
-  - port: 5165
+  - name: http
+    port: 5165
     targetPort: 5165
   selector:
     app: backend2
@@ -114,7 +115,8 @@ metadata:
   namespace: tutorial-application
 spec:
   ports:
-  - port: 4000
+  - name: http
+    port: 4000
     targetPort: 4000
   selector:
     app: frontend
