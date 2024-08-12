@@ -34,7 +34,7 @@ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/
 
 #### Deploy observability backend
 
-This course is all about Observabilty, so a backend is needed. If you don't have one, you can install a Prometheus compatible database Grafana [Mimir](https://github.com/grafana/mimir) as well as [Loki](https://github.com/grafana/loki) for logs and [Tempo](https://github.com/grafana/mimir) for traces as follows:
+This course is all about Observabilty, so a backend is needed. If you don't have one, you can install a Prometheus compatible database Grafana [Mimir](https://github.com/grafana/mimir) as well as [Loki](https://github.com/grafana/loki) for logs and [Tempo](https://github.com/grafana/tempo) for traces as follows:
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/pavolloffay/kubecon-eu-2023-opentelemetry-kubernetes-tutorial/main/backend/01-backend.yaml
